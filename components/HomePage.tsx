@@ -54,7 +54,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
             {/* Subheading */}
             <p className="text-xl md:text-2xl text-foreground-dim font-mono max-w-2xl mx-auto">
               An exclusive social club for tech professionals who want more than networking—
-              <span className="text-neon-purple"> they want adventure</span>.
+              <span className="text-neon-purple">they want adventure</span>.
             </p>
 
             {/* CTA Buttons */}

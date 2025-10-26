@@ -232,12 +232,28 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSkip]);
 
-  // Hide warning after 2 seconds
+  // Fade in warning after 1s, fade out after 2s
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowWarning(false);
+    // Start with warning hidden
+    const fadeInTimer = setTimeout(() => {
+      const warningEl = document.querySelector('.glitch-warning');
+      if (warningEl) {
+        warningEl.classList.add('fade-in');
+      }
+    }, 1000);
+
+    const hideTimer = setTimeout(() => {
+      const warningEl = document.querySelector('.glitch-warning');
+      if (warningEl) {
+        warningEl.classList.add('fade-out');
+      }
+      setTimeout(() => setShowWarning(false), 500);
     }, 2000);
-    return () => clearTimeout(timer);
+
+    return () => {
+      clearTimeout(fadeInTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
 
   // Get phase class name
@@ -475,6 +491,16 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
           text-align: center;
           font-family: var(--font-geist-sans), sans-serif;
           z-index: 10001;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
+        }
+
+        .glitch-warning.fade-in {
+          opacity: 1;
+        }
+
+        .glitch-warning.fade-out {
+          opacity: 0;
         }
 
         .glitch-warning p {

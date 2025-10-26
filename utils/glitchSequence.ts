@@ -41,17 +41,17 @@ export const BACKGROUND_SCHEDULE = [
   { time: 11500, duration: 2000, type: 'tech' },
 ];
 
-// Overlay image flashes (macabre/social - BRIEF like subliminal words)
+// Overlay image flashes (start with macabre horror, transition to social)
 export const FLASH_SCHEDULE = [
-  { time: 4200, duration: 150, type: 'macabre', zone: 'top-right' },
-  { time: 5800, duration: 120, type: 'social', zone: 'bottom-left' },
-  { time: 6600, duration: 150, type: 'macabre', zone: 'top-left' },
-  { time: 8200, duration: 100, type: 'social', zone: 'bottom-right' },
-  { time: 8900, duration: 150, type: 'macabre', zone: 'bottom-right' },
-  { time: 10100, duration: 120, type: 'social', zone: 'top-right' },
-  { time: 11200, duration: 150, type: 'macabre', zone: 'bottom-left' },
-  { time: 12400, duration: 100, type: 'social', zone: 'top-left' },
-  { time: 13300, duration: 120, type: 'macabre', zone: 'top-right' },
+  { time: 4200, duration: 500, type: 'macabre', zone: 'top-right' },
+  { time: 5200, duration: 500, type: 'macabre', zone: 'bottom-left' },
+  { time: 6200, duration: 500, type: 'macabre', zone: 'top-left' },
+  { time: 7300, duration: 500, type: 'macabre', zone: 'bottom-right' },
+  { time: 8400, duration: 450, type: 'macabre', zone: 'top-right' },
+  { time: 9500, duration: 450, type: 'social', zone: 'bottom-left' },
+  { time: 10600, duration: 450, type: 'social', zone: 'top-right' },
+  { time: 11700, duration: 450, type: 'social', zone: 'bottom-right' },
+  { time: 12800, duration: 450, type: 'social', zone: 'top-left' },
 ];
 
 // Text corruption patterns
