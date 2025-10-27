@@ -232,27 +232,14 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSkip]);
 
-  // Fade in warning after 1s, fade out after 3s (visible for 2 seconds)
+  // Fade in skip button after 3 seconds
   useEffect(() => {
-    // Start with warning hidden
     const fadeInTimer = setTimeout(() => {
-      const warningEl = document.querySelector('.glitch-warning');
-      if (warningEl) {
-        warningEl.classList.add('fade-in');
-      }
-    }, 1000);
-
-    const hideTimer = setTimeout(() => {
-      const warningEl = document.querySelector('.glitch-warning');
-      if (warningEl) {
-        warningEl.classList.add('fade-out');
-      }
-      setTimeout(() => setShowWarning(false), 500);
+      setShowWarning(true);
     }, 3000);
 
     return () => {
       clearTimeout(fadeInTimer);
-      clearTimeout(hideTimer);
     };
   }, []);
 
@@ -363,17 +350,12 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
         />
       ))}
 
-      {/* Accessibility warning */}
+      {/* Skip button - fades in after 3 seconds in upper right */}
       {showWarning && (
-        <div className="glitch-warning">
-          <p>⚠️ Warning: Unsettling imagery ahead</p>
-        </div>
+        <button onClick={handleSkip} className="glitch-skip-btn-fade">
+          Skip
+        </button>
       )}
-
-      {/* Subtle skip button - always visible */}
-      <button onClick={handleSkip} className="glitch-skip-btn-subtle">
-        Skip Animation
-      </button>
 
       {/* Subliminal Message Flash */}
       {showSubliminal && (
