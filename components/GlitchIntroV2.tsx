@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import '../app/glitch-v2.css';
 import {
@@ -82,6 +82,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   const [showSubliminal, setShowSubliminal] = useState(false);
   const [flashBackground, setFlashBackground] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const isAliveRef = useRef(true); // Track if component is still mounted and active
 
   // Pre-assign random images to each flash event (macabre/social overlays)
   const flashImages = useMemo(() => {
@@ -134,45 +135,40 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     return () => clearTimeout(loadTimer);
   }, [onComplete]);
 
-  // Emergency refresh if page gets stuck (check for main element)
+  // Emergency refresh if page gets stuck (check if glitch intro hangs)
   useEffect(() => {
     if (visitTracking.shouldSkipGlitch()) return;
 
-    const startTime = Date.now();
+    // Wait a bit before starting to check (let component initialize)
+    const initialDelay = setTimeout(() => {
+      const checkInterval = setInterval(() => {
+        // If glitch intro is still alive (not unmounted) but main element doesn't exist
+        // That means we're stuck in the glitch intro
+        if (isAliveRef.current) {
+          const mainElement = document.querySelector('main');
+          if (!mainElement) {
+            console.warn('Glitch intro still running, main element not found yet');
+          }
+        }
+      }, 2000); // Check every 2 seconds
 
-    const checkInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-
-      // After 3 seconds, check if main element exists
-      // Main element only appears when GlitchWrapper switches to HomePage
-      // If we're still in glitch intro after animation should be done, something is wrong
-      if (elapsed > 3000) {
-        const mainElement = document.querySelector('main');
-        if (!mainElement) {
-          console.error('Main content failed to load after glitch intro - forcing refresh');
-          clearInterval(checkInterval);
+      // Hard timeout - if we're STILL in glitch intro after 20 seconds, something is wrong
+      const emergencyTimeout = setTimeout(() => {
+        if (isAliveRef.current) {
+          console.error('Glitch intro hung - still mounted after 20 seconds, forcing refresh');
           localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
           window.location.reload();
-        } else {
-          // Main element found, all is well
-          clearInterval(checkInterval);
         }
-      }
-    }, 500); // Check every 500ms
+      }, 20000); // 20 second absolute maximum
 
-    // Hard timeout at 20 seconds (longer than max animation time)
-    const emergencyTimeout = setTimeout(() => {
-      const mainElement = document.querySelector('main');
-      if (!mainElement) {
-        console.error('Emergency timeout - page completely stuck, forcing refresh');
-        localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
-        window.location.reload();
-      }
-    }, 20000);
+      return () => {
+        clearInterval(checkInterval);
+        clearTimeout(emergencyTimeout);
+      };
+    }, 3000); // Start checking after 3 seconds
 
     return () => {
-      clearInterval(checkInterval);
-      clearTimeout(emergencyTimeout);
+      clearTimeout(initialDelay);
     };
   }, []);
 
@@ -201,6 +197,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     // Failsafe timeout - force complete after max time + buffer
     const failsafeTimeout = setTimeout(() => {
       console.warn('Glitch animation failsafe triggered');
+      isAliveRef.current = false;
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
       }
@@ -214,6 +211,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
       const timeSinceLastUpdate = Date.now() - lastUpdateTime;
       if (timeSinceLastUpdate > 2000) {
         console.error('Animation loop appears stuck - forcing completion');
+        isAliveRef.current = false;
         clearInterval(watchdogInterval);
         clearTimeout(failsafeTimeout);
         if (animationFrame) {
@@ -231,6 +229,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
       lastUpdateTime = now; // Update watchdog
 
       if (newElapsed >= maxTime) {
+        isAliveRef.current = false; // Mark as complete
         clearTimeout(failsafeTimeout);
         clearInterval(watchdogInterval);
         visitTracking.markGlitchSeen();
@@ -312,6 +311,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
   // Skip handler
   const handleSkip = useCallback(() => {
+    isAliveRef.current = false; // Mark as complete
     visitTracking.markGlitchSeen();
     document.body.style.overflow = ''; // Re-enable scroll
     onComplete();
