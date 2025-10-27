@@ -142,11 +142,21 @@ export const visitTracking = {
   },
 
   shouldSkipGlitch(): boolean {
+    // Check for emergency skip flag (from auto-refresh)
+    if (typeof window !== 'undefined' && localStorage.getItem('goodhang_glitch_emergency_skip') === 'true') {
+      return true;
+    }
     return this.hasSeenGlitch() && this.isCurrentSession();
   },
 
   shouldUseCompressed(): boolean {
     return this.hasSeenGlitch() && !this.isCurrentSession();
+  },
+
+  clearEmergencySkip(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('goodhang_glitch_emergency_skip');
+    }
   }
 };
 

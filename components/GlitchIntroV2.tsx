@@ -81,6 +81,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   const [subliminalMessage, setSubliminalMessage] = useState('');
   const [showSubliminal, setShowSubliminal] = useState(false);
   const [flashBackground, setFlashBackground] = useState(false);
+  const [contentLoaded, setContentLoaded] = useState(false);
 
   // Pre-assign random images to each flash event (macabre/social overlays)
   const flashImages = useMemo(() => {
@@ -111,6 +112,8 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   // Check if we should skip or compress
   useEffect(() => {
     if (visitTracking.shouldSkipGlitch()) {
+      // Clear emergency skip flag if it was set
+      visitTracking.clearEmergencySkip();
       onComplete();
       return;
     }
@@ -120,7 +123,58 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     }
 
     visitTracking.markCurrentSession();
+
+    // Mark content as loaded after a brief delay
+    const loadTimer = setTimeout(() => {
+      setContentLoaded(true);
+      // Clear emergency skip flag since we loaded successfully
+      visitTracking.clearEmergencySkip();
+    }, 100);
+
+    return () => clearTimeout(loadTimer);
   }, [onComplete]);
+
+  // Emergency refresh if page gets stuck (check for main element)
+  useEffect(() => {
+    if (visitTracking.shouldSkipGlitch()) return;
+
+    const startTime = Date.now();
+
+    const checkInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+
+      // After 3 seconds, check if main element exists
+      // Main element only appears when GlitchWrapper switches to HomePage
+      // If we're still in glitch intro after animation should be done, something is wrong
+      if (elapsed > 3000) {
+        const mainElement = document.querySelector('main');
+        if (!mainElement) {
+          console.error('Main content failed to load after glitch intro - forcing refresh');
+          clearInterval(checkInterval);
+          localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
+          window.location.reload();
+        } else {
+          // Main element found, all is well
+          clearInterval(checkInterval);
+        }
+      }
+    }, 500); // Check every 500ms
+
+    // Hard timeout at 20 seconds (longer than max animation time)
+    const emergencyTimeout = setTimeout(() => {
+      const mainElement = document.querySelector('main');
+      if (!mainElement) {
+        console.error('Emergency timeout - page completely stuck, forcing refresh');
+        localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
+        window.location.reload();
+      }
+    }, 20000);
+
+    return () => {
+      clearInterval(checkInterval);
+      clearTimeout(emergencyTimeout);
+    };
+  }, []);
 
   // Prevent body scroll during intro
   useEffect(() => {
@@ -142,6 +196,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     const maxTime = isCompressed ? GLITCH_TIMING.COMPRESSED : GLITCH_TIMING.TOTAL;
     let animationFrame: number;
     const startTime = Date.now();
+    let lastUpdateTime = Date.now();
 
     // Failsafe timeout - force complete after max time + buffer
     const failsafeTimeout = setTimeout(() => {
@@ -154,12 +209,30 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
       onComplete();
     }, maxTime + 1000); // 1 second buffer
 
+    // Watchdog timer - detect if animation loop stops running
+    const watchdogInterval = setInterval(() => {
+      const timeSinceLastUpdate = Date.now() - lastUpdateTime;
+      if (timeSinceLastUpdate > 2000) {
+        console.error('Animation loop appears stuck - forcing completion');
+        clearInterval(watchdogInterval);
+        clearTimeout(failsafeTimeout);
+        if (animationFrame) {
+          cancelAnimationFrame(animationFrame);
+        }
+        visitTracking.markGlitchSeen();
+        document.body.style.overflow = '';
+        onComplete();
+      }
+    }, 1000);
+
     const animate = () => {
       const now = Date.now();
       const newElapsed = now - startTime;
+      lastUpdateTime = now; // Update watchdog
 
       if (newElapsed >= maxTime) {
         clearTimeout(failsafeTimeout);
+        clearInterval(watchdogInterval);
         visitTracking.markGlitchSeen();
         document.body.style.overflow = ''; // Re-enable scroll
         onComplete();
@@ -230,6 +303,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
     return () => {
       clearTimeout(failsafeTimeout);
+      clearInterval(watchdogInterval);
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
       }

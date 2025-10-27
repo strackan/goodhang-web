@@ -10,6 +10,10 @@ interface HomePageProps {
 
 export function HomePage({ onRewatchIntro }: HomePageProps) {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [email, setEmail] = useState('');
+  const [subscribeLoading, setSubscribeLoading] = useState(false);
+  const [subscribeSuccess, setSubscribeSuccess] = useState(false);
+  const [subscribeError, setSubscribeError] = useState('');
 
   useEffect(() => {
     // Check if redirected from Typeform with success parameter
@@ -22,6 +26,40 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
       setTimeout(() => setShowSuccessMessage(false), 5000);
     }
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubscribeLoading(true);
+    setSubscribeError('');
+
+    try {
+      // Create FormData for Substack
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('first_url', window.location.href);
+      formData.append('first_referrer', document.referrer || '');
+      formData.append('current_url', window.location.href);
+      formData.append('source', 'goodhang-web');
+      formData.append('referring_site', 'goodhang.club');
+
+      // Submit to Substack
+      const response = await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors', // Substack doesn't support CORS, but submission will work
+      });
+
+      // With no-cors, we can't read the response, but if we get here, it likely worked
+      setSubscribeSuccess(true);
+      setEmail('');
+      setTimeout(() => setSubscribeSuccess(false), 5000);
+    } catch (error) {
+      console.error('Subscription error:', error);
+      setSubscribeError('Something went wrong. Please try again.');
+    } finally {
+      setSubscribeLoading(false);
+    }
+  };
 
   return (
     <>
@@ -130,17 +168,39 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
               <p className="text-foreground-dim mb-8 font-mono">
                 Get on the list. We&apos;re building something different. No spam, just updates about events and membership.
               </p>
-              <form className="flex flex-col sm:flex-row gap-4">
+
+              {subscribeSuccess && (
+                <div className="mb-6 border-2 border-neon-cyan bg-neon-cyan/10 p-4">
+                  <p className="text-neon-cyan font-mono text-sm">
+                    ✓ You&apos;re on the list! Check your email to confirm.
+                  </p>
+                </div>
+              )}
+
+              {subscribeError && (
+                <div className="mb-6 border-2 border-neon-magenta bg-neon-magenta/10 p-4">
+                  <p className="text-neon-magenta font-mono text-sm">
+                    {subscribeError}
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
                 <input
                   type="email"
                   placeholder="your@email.com"
-                  className="flex-1 px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={subscribeLoading}
+                  className="flex-1 px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.5)]"
+                  disabled={subscribeLoading}
+                  className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Subscribe
+                  {subscribeLoading ? 'Subscribing...' : 'Subscribe'}
                 </button>
               </form>
             </div>
