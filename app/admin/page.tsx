@@ -48,12 +48,12 @@ export default async function AdminDashboard() {
   // Get stats
   const { count: activeMembers } = await supabase
     .from('profiles')
-    .select('*', { count: 'only', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('membership_status', 'active');
 
   const { count: upcomingEvents } = await supabase
     .from('events')
-    .select('*', { count: 'only', head: true })
+    .select('*', { count: 'exact', head: true })
     .gte('event_datetime', new Date().toISOString())
     .eq('is_public', true);
 
