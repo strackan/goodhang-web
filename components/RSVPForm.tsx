@@ -52,6 +52,9 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
       if (insertError) throw insertError;
 
       // Send confirmation email (non-blocking)
+      // Temporarily disabled due to Resend domain setup
+      // TODO: Re-enable once domain is verified
+      /*
       if (rsvpData) {
         fetch('/api/emails/rsvp-confirmation', {
           method: 'POST',
@@ -62,6 +65,7 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
           }),
         }).catch(err => console.error('Email send failed:', err));
       }
+      */
 
       setSuccess(true);
 
