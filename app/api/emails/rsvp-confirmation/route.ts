@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resend, FROM_EMAIL } from '@/lib/resend/client';
 import { RSVPConfirmationEmail } from '@/lib/resend/templates';
 import { createClient } from '@/lib/supabase/server';
-import { createElement } from 'react';
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,7 +63,7 @@ export async function POST(request: NextRequest) {
       from: FROM_EMAIL,
       to: rsvp.guest_email,
       subject: `You're confirmed for ${event.title}!`,
-      react: createElement(RSVPConfirmationEmail, {
+      react: RSVPConfirmationEmail({
         eventTitle: event.title,
         eventDate: dateStr,
         eventTime: timeStr,

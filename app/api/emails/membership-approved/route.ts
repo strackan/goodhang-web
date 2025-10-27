@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resend, FROM_EMAIL } from '@/lib/resend/client';
 import { MembershipApprovedEmail } from '@/lib/resend/templates';
 import { createClient } from '@/lib/supabase/server';
-import { createElement } from 'react';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
       from: FROM_EMAIL,
       to: profile.email,
       subject: '🎉 Welcome to Good Hang!',
-      react: createElement(MembershipApprovedEmail, {
+      react: MembershipApprovedEmail({
         name: profile.name || 'there',
         loginUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members`,
         directoryUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members/directory`,
