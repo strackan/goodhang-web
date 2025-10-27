@@ -7,4 +7,5 @@ if (!process.env.RESEND_API_KEY) {
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Default sender email
-export const FROM_EMAIL = 'Good Hang <hello@goodhang.club>';
+// Use Resend's onboarding email until custom domain is verified
+export const FROM_EMAIL = 'Good Hang <onboarding@resend.dev>';
