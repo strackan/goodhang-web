@@ -84,18 +84,28 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
   // Pre-assign random images to each flash event (macabre/social overlays)
   const flashImages = useMemo(() => {
-    return FLASH_SCHEDULE.map(flash => ({
-      path: getRandomImagePath(flash.type as 'macabre' | 'social'),
-      type: flash.type
-    }));
+    try {
+      return FLASH_SCHEDULE.map(flash => ({
+        path: getRandomImagePath(flash.type as 'macabre' | 'social'),
+        type: flash.type
+      }));
+    } catch (error) {
+      console.error('Failed to load flash images:', error);
+      return [];
+    }
   }, []);
 
   // Pre-assign random background images (TECH only)
   const backgroundImages = useMemo(() => {
-    return BACKGROUND_SCHEDULE.map(bg => ({
-      path: getRandomImagePath('tech'),
-      type: bg.type
-    }));
+    try {
+      return BACKGROUND_SCHEDULE.map(bg => ({
+        path: getRandomImagePath('tech'),
+        type: bg.type
+      }));
+    } catch (error) {
+      console.error('Failed to load background images:', error);
+      return [];
+    }
   }, []);
 
   // Check if we should skip or compress
@@ -133,11 +143,23 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     let animationFrame: number;
     const startTime = Date.now();
 
+    // Failsafe timeout - force complete after max time + buffer
+    const failsafeTimeout = setTimeout(() => {
+      console.warn('Glitch animation failsafe triggered');
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+      visitTracking.markGlitchSeen();
+      document.body.style.overflow = '';
+      onComplete();
+    }, maxTime + 1000); // 1 second buffer
+
     const animate = () => {
       const now = Date.now();
       const newElapsed = now - startTime;
 
       if (newElapsed >= maxTime) {
+        clearTimeout(failsafeTimeout);
         visitTracking.markGlitchSeen();
         document.body.style.overflow = ''; // Re-enable scroll
         onComplete();
@@ -207,6 +229,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     animationFrame = requestAnimationFrame(animate);
 
     return () => {
+      clearTimeout(failsafeTimeout);
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
       }
