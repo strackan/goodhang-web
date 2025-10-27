@@ -232,7 +232,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSkip]);
 
-  // Fade in warning after 1s, fade out after 2s
+  // Fade in warning after 1s, fade out after 3s (visible for 2 seconds)
   useEffect(() => {
     // Start with warning hidden
     const fadeInTimer = setTimeout(() => {
@@ -248,7 +248,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
         warningEl.classList.add('fade-out');
       }
       setTimeout(() => setShowWarning(false), 500);
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearTimeout(fadeInTimer);
@@ -367,11 +367,13 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
       {showWarning && (
         <div className="glitch-warning">
           <p>⚠️ Warning: Unsettling imagery ahead</p>
-          <button onClick={handleSkip} className="glitch-skip-btn">
-            Skip Animation
-          </button>
         </div>
       )}
+
+      {/* Subtle skip button - always visible */}
+      <button onClick={handleSkip} className="glitch-skip-btn-subtle">
+        Skip Animation
+      </button>
 
       {/* Subliminal Message Flash */}
       {showSubliminal && (
@@ -525,6 +527,31 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
         .glitch-skip-btn:hover {
           background: #f5f5f5;
           color: #000000;
+        }
+
+        .glitch-skip-btn-subtle {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: transparent;
+          border: 1px solid rgba(120, 120, 120, 0.3);
+          color: rgba(180, 180, 180, 0.6);
+          padding: 6px 16px;
+          cursor: pointer;
+          font-family: var(--font-geist-mono), monospace;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          transition: all 0.3s ease;
+          z-index: 10000;
+          opacity: 0.5;
+        }
+
+        .glitch-skip-btn-subtle:hover {
+          opacity: 1;
+          border-color: rgba(180, 180, 180, 0.6);
+          color: rgba(220, 220, 220, 0.9);
+          background: rgba(40, 40, 40, 0.3);
         }
 
         .glitch-content {

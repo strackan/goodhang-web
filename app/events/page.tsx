@@ -1,188 +1,161 @@
-import { VHSEffects } from '@/components/VHSEffects';
+import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { EventCard } from '@/components/EventCard';
 
-// This will eventually come from Supabase
-const MOCK_EVENTS = [
-  {
-    id: 1,
-    title: 'Launch Party: Raleigh Kickoff',
-    date: '2025-11-15',
-    time: '7:00 PM',
-    location: 'The Architect (Downtown Raleigh)',
-    description: 'The inaugural Good Hang event. Come meet the founding members, get your first token, and help us kick off something special.',
-    isPublic: true,
-    spotsAvailable: 28,
-    totalSpots: 50
-  },
-  {
-    id: 2,
-    title: 'AI Upskilling Workshop: Agents & Automation',
-    date: '2025-11-22',
-    time: '6:00 PM',
-    location: 'HQ Coffee (Raleigh)',
-    description: 'Hands-on session building AI agents. Bring your laptop. We\'re leveling up together.',
-    isPublic: false,
-    spotsAvailable: 8,
-    totalSpots: 15
-  },
-  {
-    id: 3,
-    title: 'Late Night Karaoke Chaos',
-    date: '2025-12-06',
-    time: '9:00 PM',
-    location: 'Lucky B\'s (Glenwood South)',
-    description: 'Because nothing says "professional networking" like belting out 80s power ballads at 11 PM.',
-    isPublic: true,
-    spotsAvailable: 15,
-    totalSpots: 30
-  }
-];
+export default async function EventsPage() {
+  const supabase = await createClient();
 
-export default function Events() {
+  // Get current user (optional, to show if they've RSVPed)
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Get all upcoming events
+  const { data: upcomingEvents } = await supabase
+    .from('events')
+    .select(`
+      *,
+      rsvps (id, user_id, guest_email, plus_ones)
+    `)
+    .gte('event_datetime', new Date().toISOString())
+    .eq('is_public', true)
+    .order('event_datetime', { ascending: true });
+
+  // Get past events
+  const { data: pastEvents } = await supabase
+    .from('events')
+    .select(`
+      *,
+      rsvps (id, user_id, guest_email, plus_ones)
+    `)
+    .lt('event_datetime', new Date().toISOString())
+    .eq('is_public', true)
+    .order('event_datetime', { ascending: false })
+    .limit(6);
+
   return (
-    <>
-      <VHSEffects />
-
-      <div className="min-h-screen relative">
-        {/* Navigation */}
-        <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b border-neon-purple/20">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <Link href="/" className="font-mono text-2xl font-bold chromatic-aberration">
-              <span className="neon-purple">GOOD_HANG</span>
+    <div className="min-h-screen">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b border-neon-purple/20">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/" className="font-mono text-2xl font-bold">
+            <span className="neon-purple">GOOD_HANG</span>
+          </Link>
+          <div className="flex gap-6 items-center">
+            <Link href="/" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
+              Home
             </Link>
-            <div className="flex gap-6 items-center">
-              <Link href="/about" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-                About
+            <Link href="/launch" className="text-neon-cyan hover:text-neon-magenta transition-colors font-mono">
+              Launch Party
+            </Link>
+            <Link href="/members/directory" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
+              Members
+            </Link>
+            {user ? (
+              <Link href="/members" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
+                Dashboard
               </Link>
-              <Link href="/events" className="text-neon-magenta transition-colors font-mono">
-                Events
-              </Link>
+            ) : (
               <Link href="/login" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-                Member Login
+                Login
               </Link>
-            </div>
+            )}
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        {/* Content */}
-        <main className="container mx-auto px-6 pt-32 pb-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-12">
-              <h1 className="text-5xl md:text-6xl font-bold font-mono neon-cyan mb-4">
-                UPCOMING EVENTS
-              </h1>
-              <p className="text-foreground-dim font-mono">
-                Public events are open to prospective members. Members-only events require login.
-              </p>
-            </div>
-
-            {/* Events List */}
-            <div className="space-y-6">
-              {MOCK_EVENTS.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
-
-            {/* CTA for non-members */}
-            <div className="mt-16 border-2 border-neon-purple/30 bg-background-lighter p-8">
-              <h2 className="text-2xl font-bold font-mono neon-purple mb-3">
-                Want Access to All Events?
-              </h2>
-              <p className="text-foreground-dim font-mono mb-6">
-                Members get exclusive access to workshops, mentorship sessions, and smaller intimate gatherings.
-                Plus, you get your first Favor Token.
-              </p>
-              <a
-                href="/#join"
-                className="inline-block px-8 py-3 border-2 border-neon-purple text-neon-purple hover:bg-neon-purple hover:text-background transition-all duration-300 font-mono uppercase tracking-wider"
-              >
-                Apply for Membership
-              </a>
-            </div>
+      {/* Main Content */}
+      <main className="container mx-auto px-6 pt-32 pb-20">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-bold font-mono neon-cyan mb-4">
+              EVENTS
+            </h1>
+            <p className="text-xl text-foreground-dim font-mono max-w-2xl mx-auto">
+              From happy hours to road trips —
+              <span className="text-neon-purple"> experiences you'll actually remember</span>
+            </p>
           </div>
-        </main>
 
-        {/* Footer */}
-        <footer className="border-t border-neon-purple/20 py-8 mt-20">
-          <div className="container mx-auto px-6 text-center text-foreground-dim font-mono text-sm">
-            <p>© 2025 Good Hang. A <a href="https://renubu.com" target="_blank" rel="noopener noreferrer" className="text-neon-purple hover:text-neon-magenta transition-colors">Renubu</a> initiative.</p>
-          </div>
-        </footer>
-      </div>
-    </>
-  );
-}
+          {/* Upcoming Events */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold font-mono neon-purple mb-8">
+              Upcoming Events
+            </h2>
 
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  description: string;
-  isPublic: boolean;
-  spotsAvailable: number;
-  totalSpots: number;
-}
-
-function EventCard({ event }: { event: Event }) {
-  const eventDate = new Date(event.date);
-  const formattedDate = eventDate.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
-  });
-
-  const availabilityPercent = (event.spotsAvailable / event.totalSpots) * 100;
-  const availabilityColor = availabilityPercent > 50 ? 'neon-cyan' : availabilityPercent > 25 ? 'neon-magenta' : 'text-red-500';
-
-  return (
-    <div className="border-2 border-neon-purple/30 bg-background-lighter p-6 hover:border-neon-purple transition-all">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-2xl font-bold font-mono neon-magenta">
-              {event.title}
-            </h3>
-            {!event.isPublic && (
-              <span className="px-2 py-1 text-xs font-mono border border-neon-purple text-neon-purple uppercase">
-                Members Only
-              </span>
+            {!upcomingEvents || upcomingEvents.length === 0 ? (
+              <div className="border-2 border-neon-cyan/30 bg-background-lighter p-12 text-center">
+                <p className="text-foreground-dim font-mono text-lg mb-4">
+                  No upcoming events yet
+                </p>
+                <p className="text-foreground-dim font-mono text-sm mb-6">
+                  Check back soon or RSVP for the launch party!
+                </p>
+                <Link
+                  href="/launch"
+                  className="inline-block px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)]"
+                >
+                  Launch Party
+                </Link>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {upcomingEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    userRsvp={event.rsvps?.find((rsvp: any) =>
+                      rsvp.user_id === user?.id || rsvp.guest_email === user?.email
+                    )}
+                  />
+                ))}
+              </div>
             )}
           </div>
 
-          <div className="space-y-1 text-foreground-dim font-mono text-sm">
-            <p className="flex items-center gap-2">
-              <span className="neon-cyan">📅</span>
-              {formattedDate} · {event.time}
+          {/* Past Events */}
+          {pastEvents && pastEvents.length > 0 && (
+            <div>
+              <h2 className="text-3xl font-bold font-mono neon-magenta mb-8">
+                Past Events
+              </h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                {pastEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    isPast={true}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CTA for Members */}
+          <div className="mt-16 border-2 border-neon-purple/30 bg-background-lighter p-8 text-center">
+            <h2 className="text-2xl font-bold font-mono neon-purple mb-4">
+              WANT TO HOST AN EVENT?
+            </h2>
+            <p className="text-foreground-dim font-mono mb-6">
+              Members can propose events and ambassadors can host official Good Hang experiences.
             </p>
-            <p className="flex items-center gap-2">
-              <span className="neon-magenta">📍</span>
-              {event.location}
-            </p>
+            {user ? (
+              <Link
+                href="/members"
+                className="inline-block px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)]"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/apply"
+                className="inline-block px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)]"
+              >
+                Apply for Membership
+              </Link>
+            )}
           </div>
         </div>
-
-        <div className="text-right">
-          <p className={`font-mono text-sm ${availabilityColor}`}>
-            {event.spotsAvailable} spots left
-          </p>
-          <p className="font-mono text-xs text-foreground-dim">
-            of {event.totalSpots}
-          </p>
-        </div>
-      </div>
-
-      <p className="text-foreground-dim font-mono text-sm mb-4">
-        {event.description}
-      </p>
-
-      <button
-        className="px-6 py-2 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background transition-all duration-300 font-mono uppercase tracking-wider text-sm"
-        disabled={!event.isPublic}
-      >
-        {event.isPublic ? 'RSVP' : 'Members Only'}
-      </button>
+      </main>
     </div>
   );
 }
