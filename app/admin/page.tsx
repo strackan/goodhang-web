@@ -27,7 +27,7 @@ export default async function AdminDashboard() {
   // Get pending applications count
   const { count: pendingCount } = await supabase
     .from('applications')
-    .select('*', { count: 'only', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('status', 'pending');
 
   // Get pending users (accounts created but not approved)
