@@ -333,19 +333,7 @@ export function ApplicationReceivedEmail({ name }: ApplicationReceivedProps) {
 }
 
 // ============================================================
-// HELPER FUNCTIONS TO RENDER EMAILS AS HTML STRINGS
+// NOTE: Resend supports React components directly
+// No need to render to static markup
+// Just export the components and use them directly in API routes
 // ============================================================
-
-import { renderToStaticMarkup } from 'react-dom/server';
-
-export function renderRSVPConfirmation(props: RSVPConfirmationProps): string {
-  return renderToStaticMarkup(<RSVPConfirmationEmail {...props} />);
-}
-
-export function renderMembershipApproved(props: MembershipApprovedProps): string {
-  return renderToStaticMarkup(<MembershipApprovedEmail {...props} />);
-}
-
-export function renderApplicationReceived(props: ApplicationReceivedProps): string {
-  return renderToStaticMarkup(<ApplicationReceivedEmail {...props} />);
-}
