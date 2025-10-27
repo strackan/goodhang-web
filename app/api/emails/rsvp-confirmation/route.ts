@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resend, FROM_EMAIL } from '@/lib/resend/client';
-import { RSVPConfirmationEmail } from '@/lib/resend/templates';
+import { generateRSVPConfirmationHTML } from '@/lib/resend/templates';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
@@ -58,20 +58,23 @@ export async function POST(request: NextRequest) {
       hour12: true,
     });
 
-    // Send email via Resend with React component
+    // Generate HTML email
+    const htmlEmail = generateRSVPConfirmationHTML({
+      eventTitle: event.title,
+      eventDate: dateStr,
+      eventTime: timeStr,
+      eventLocation: event.location,
+      guestName: rsvp.guest_name || 'there',
+      plusOnes: rsvp.plus_ones || 0,
+      eventUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/events/${event.id}`,
+    });
+
+    // Send email via Resend
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: rsvp.guest_email,
       subject: `You're confirmed for ${event.title}!`,
-      react: RSVPConfirmationEmail({
-        eventTitle: event.title,
-        eventDate: dateStr,
-        eventTime: timeStr,
-        eventLocation: event.location,
-        guestName: rsvp.guest_name || 'there',
-        plusOnes: rsvp.plus_ones || 0,
-        eventUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/events/${event.id}`,
-      }),
+      html: htmlEmail,
     });
 
     if (error) {

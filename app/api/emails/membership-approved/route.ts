@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resend, FROM_EMAIL } from '@/lib/resend/client';
-import { MembershipApprovedEmail } from '@/lib/resend/templates';
+import { generateMembershipApprovedHTML } from '@/lib/resend/templates';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
@@ -31,17 +31,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send email via Resend with React component
+    // Generate HTML email
+    const htmlEmail = generateMembershipApprovedHTML({
+      name: profile.name || 'there',
+      loginUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members`,
+      directoryUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members/directory`,
+      eventsUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/events`,
+    });
+
+    // Send email via Resend
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: profile.email,
       subject: '🎉 Welcome to Good Hang!',
-      react: MembershipApprovedEmail({
-        name: profile.name || 'there',
-        loginUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members`,
-        directoryUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/members/directory`,
-        eventsUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/events`,
-      }),
+      html: htmlEmail,
     });
 
     if (error) {
