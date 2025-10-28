@@ -112,7 +112,10 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
   // Check if we should skip or compress
   useEffect(() => {
+    console.log('[GlitchIntroV2] Component mounted');
+
     if (visitTracking.shouldSkipGlitch()) {
+      console.log('[GlitchIntroV2] Skipping glitch intro');
       // Clear emergency skip flag if it was set
       visitTracking.clearEmergencySkip();
       onComplete();
@@ -120,13 +123,17 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     }
 
     if (visitTracking.shouldUseCompressed()) {
+      console.log('[GlitchIntroV2] Using compressed animation');
       setIsCompressed(true);
+    } else {
+      console.log('[GlitchIntroV2] Using full animation');
     }
 
     visitTracking.markCurrentSession();
 
     // Mark content as loaded after a brief delay
     const loadTimer = setTimeout(() => {
+      console.log('[GlitchIntroV2] Content loaded');
       setContentLoaded(true);
       // Clear emergency skip flag since we loaded successfully
       visitTracking.clearEmergencySkip();
@@ -139,36 +146,22 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   useEffect(() => {
     if (visitTracking.shouldSkipGlitch()) return;
 
-    // Wait a bit before starting to check (let component initialize)
-    const initialDelay = setTimeout(() => {
-      const checkInterval = setInterval(() => {
-        // If glitch intro is still alive (not unmounted) but main element doesn't exist
-        // That means we're stuck in the glitch intro
-        if (isAliveRef.current) {
-          const mainElement = document.querySelector('main');
-          if (!mainElement) {
-            console.warn('Glitch intro still running, main element not found yet');
-          }
-        }
-      }, 2000); // Check every 2 seconds
+    console.log('[GlitchIntroV2] Starting emergency timeout monitor (5s)');
 
-      // Hard timeout - if we're STILL in glitch intro after 20 seconds, something is wrong
-      const emergencyTimeout = setTimeout(() => {
-        if (isAliveRef.current) {
-          console.error('Glitch intro hung - still mounted after 20 seconds, forcing refresh');
-          localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
-          window.location.reload();
-        }
-      }, 20000); // 20 second absolute maximum
-
-      return () => {
-        clearInterval(checkInterval);
-        clearTimeout(emergencyTimeout);
-      };
-    }, 3000); // Start checking after 3 seconds
+    // Hard timeout - if we're STILL in glitch intro after 5 seconds, something is wrong
+    const emergencyTimeout = setTimeout(() => {
+      if (isAliveRef.current) {
+        console.error('[GlitchIntroV2] Emergency timeout triggered - glitch intro hung, forcing refresh');
+        localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
+        window.location.reload();
+      } else {
+        console.log('[GlitchIntroV2] Emergency timeout passed - component already completed');
+      }
+    }, 5000); // 5 second maximum
 
     return () => {
-      clearTimeout(initialDelay);
+      clearTimeout(emergencyTimeout);
+      console.log('[GlitchIntroV2] Emergency timeout monitor cleaned up');
     };
   }, []);
 
@@ -229,6 +222,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
       lastUpdateTime = now; // Update watchdog
 
       if (newElapsed >= maxTime) {
+        console.log('[GlitchIntroV2] Animation complete naturally');
         isAliveRef.current = false; // Mark as complete
         clearTimeout(failsafeTimeout);
         clearInterval(watchdogInterval);
@@ -311,6 +305,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
   // Skip handler
   const handleSkip = useCallback(() => {
+    console.log('[GlitchIntroV2] Skip button clicked');
     isAliveRef.current = false; // Mark as complete
     visitTracking.markGlitchSeen();
     document.body.style.overflow = ''; // Re-enable scroll
