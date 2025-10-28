@@ -146,18 +146,28 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   useEffect(() => {
     if (visitTracking.shouldSkipGlitch()) return;
 
-    console.log('[GlitchIntroV2] Starting emergency timeout monitor (5s)');
+    console.log('[GlitchIntroV2] Starting emergency timeout monitor (3s)');
 
-    // Hard timeout - if we're STILL in glitch intro after 5 seconds, something is wrong
+    // Check after 3 seconds if content has rendered
     const emergencyTimeout = setTimeout(() => {
-      if (isAliveRef.current) {
-        console.error('[GlitchIntroV2] Emergency timeout triggered - glitch intro hung, forcing refresh');
+      if (!isAliveRef.current) {
+        console.log('[GlitchIntroV2] Emergency timeout passed - component already completed');
+        return;
+      }
+
+      // Check if the main content (quote) has actually rendered to the DOM
+      const mainContent = document.querySelector('.glitch-content .glitch-quote');
+
+      if (!mainContent) {
+        // No content rendered = we're hanging
+        console.error('[GlitchIntroV2] Emergency timeout triggered - no content rendered after 3s, forcing refresh');
         localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
         window.location.reload();
       } else {
-        console.log('[GlitchIntroV2] Emergency timeout passed - component already completed');
+        // Content is showing, glitch is playing normally - let it continue for full 15s
+        console.log('[GlitchIntroV2] Content rendered successfully, glitch playing normally');
       }
-    }, 5000); // 5 second maximum
+    }, 3000); // 3 second threshold
 
     return () => {
       clearTimeout(emergencyTimeout);
