@@ -33,11 +33,13 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
     setError(null);
 
     try {
+      alert('Starting RSVP submission...');
       console.log('=== RSVP Debug Info ===');
       console.log('Form Data:', formData);
       console.log('Event ID:', eventId);
       console.log('Current User:', currentUser);
 
+      alert('About to fetch...');
       // Call server-side API route instead of client-side Supabase
       const response = await fetch('/api/rsvp', {
         method: 'POST',
@@ -85,6 +87,7 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
       }, 1500);
 
     } catch (err: any) {
+      alert('ERROR CAUGHT: ' + (err.message || err.toString()));
       console.error('=== RSVP Error Details ===');
       console.error('Error object:', err);
       console.error('Error message:', err.message);
