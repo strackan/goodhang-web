@@ -17,6 +17,7 @@ export default function LaunchPartyPage() {
   const [rsvpCount, setRsvpCount] = useState<number>(0);
   const [showIntro, setShowIntro] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
   // Hardcoded launch event ID - created via migration 002_launch_event.sql
   const LAUNCH_EVENT_ID = '00000000-0000-0000-0000-000000000001';
@@ -79,6 +80,8 @@ export default function LaunchPartyPage() {
         throw new Error(result.error || `Server error: ${response.status}`);
       }
 
+      // Save email before resetting form
+      setSubmittedEmail(email);
       setSuccess(true);
       setLoading(false);
       fetchRSVPCount();
@@ -278,7 +281,7 @@ export default function LaunchPartyPage() {
                 YOU'RE ON THE LIST!
               </h2>
               <p className="text-foreground-dim font-mono mb-8">
-                We'll send you event details and reminders at <span className="text-neon-purple">{email}</span>
+                We'll send you event details and reminders at <span className="text-neon-purple">{submittedEmail}</span>
               </p>
               <Link
                 href="/"
