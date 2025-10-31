@@ -15,7 +15,6 @@ export default function LaunchPartyPage() {
   const [rsvpCount, setRsvpCount] = useState<number>(0);
   const [showIntro, setShowIntro] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const supabase = createClient();
 
   // Hardcoded launch event ID - created via migration 002_launch_event.sql
   const LAUNCH_EVENT_ID = '00000000-0000-0000-0000-000000000001';
@@ -35,14 +34,20 @@ export default function LaunchPartyPage() {
   }, []);
 
   const fetchRSVPCount = async () => {
-    const { data, error } = await supabase
-      .from('rsvps')
-      .select('plus_ones')
-      .eq('event_id', LAUNCH_EVENT_ID);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('rsvps')
+        .select('plus_ones')
+        .eq('event_id', LAUNCH_EVENT_ID);
 
-    if (!error && data) {
-      const total = data.reduce((acc, rsvp) => acc + 1 + (rsvp.plus_ones || 0), 0);
-      setRsvpCount(total);
+      if (!error && data) {
+        const total = data.reduce((acc, rsvp) => acc + 1 + (rsvp.plus_ones || 0), 0);
+        setRsvpCount(total);
+      }
+    } catch (err) {
+      console.error('Failed to fetch RSVP count:', err);
+      // Silently fail - the count is not critical for the form to work
     }
   };
 
@@ -51,27 +56,34 @@ export default function LaunchPartyPage() {
     setLoading(true);
     setError(null);
 
-    const { error: rsvpError } = await supabase
-      .from('rsvps')
-      .insert({
-        event_id: LAUNCH_EVENT_ID,
-        guest_name: name,
-        guest_email: email,
-        plus_ones: plusOnes,
-      });
+    try {
+      const supabase = createClient();
+      const { error: rsvpError } = await supabase
+        .from('rsvps')
+        .insert({
+          event_id: LAUNCH_EVENT_ID,
+          guest_name: name,
+          guest_email: email,
+          plus_ones: plusOnes,
+        });
 
-    if (rsvpError) {
-      setError(rsvpError.message);
-      setLoading(false);
-    } else {
-      setSuccess(true);
-      setLoading(false);
-      fetchRSVPCount();
+      if (rsvpError) {
+        setError(rsvpError.message);
+        setLoading(false);
+      } else {
+        setSuccess(true);
+        setLoading(false);
+        fetchRSVPCount();
 
-      // Reset form
-      setName('');
-      setEmail('');
-      setPlusOnes(0);
+        // Reset form
+        setName('');
+        setEmail('');
+        setPlusOnes(0);
+      }
+    } catch (err: any) {
+      console.error('Failed to submit RSVP:', err);
+      setError(err.message || 'Failed to submit RSVP. Please try again.');
+      setLoading(false);
     }
   };
 
