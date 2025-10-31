@@ -139,7 +139,7 @@ export default function LaunchPartyPage() {
               <div>
                 <span className="text-neon-cyan uppercase text-sm tracking-wider">When</span>
                 <p className="text-foreground text-lg mt-1">
-                  Thursday, October 13, 2025
+                  Thursday, November 13, 2025
                 </p>
                 <p className="text-foreground-dim mt-1">
                   6:00 PM - 8:00 PM EST

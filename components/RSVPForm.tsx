@@ -34,20 +34,32 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
     setError(null);
 
     try {
-      const supabase = createClient();
+      console.log('=== RSVP Debug Info ===');
+      console.log('Form Data:', formData);
+      console.log('Event ID:', eventId);
+      console.log('Current User:', currentUser);
+      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+      console.log('Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-      // Insert RSVP
+      const supabase = createClient();
+      console.log('Supabase client created');
+
+      const insertPayload = {
+        event_id: eventId,
+        guest_name: formData.guestName,
+        guest_email: formData.guestEmail,
+        plus_ones: formData.plusOnes,
+      };
+      console.log('Insert payload:', insertPayload);
+
+      // Insert RSVP (without user_id for now - using guest fields only)
       const { data: rsvpData, error: insertError } = await supabase
         .from('rsvps')
-        .insert({
-          event_id: eventId,
-          user_id: currentUser?.id || null,
-          guest_name: formData.guestName,
-          guest_email: formData.guestEmail,
-          plus_ones: formData.plusOnes,
-        })
+        .insert(insertPayload)
         .select()
         .single();
+
+      console.log('Insert result - data:', rsvpData, 'error:', insertError);
 
       if (insertError) throw insertError;
 
