@@ -5,7 +5,9 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { GlitchIntroV2 } from '@/components/GlitchIntroV2';
 
+// VERSION: 2024-10-31-FIX-V2 - RSVP submission uses server-side API route
 export default function LaunchPartyPage() {
+  console.log('Launch Page Version: 2024-10-31-FIX-V2 - RSVP uses API route to avoid Headers error');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [plusOnes, setPlusOnes] = useState(0);
@@ -57,29 +59,34 @@ export default function LaunchPartyPage() {
     setError(null);
 
     try {
-      const supabase = createClient();
-      const { error: rsvpError } = await supabase
-        .from('rsvps')
-        .insert({
-          event_id: LAUNCH_EVENT_ID,
-          guest_name: name,
-          guest_email: email,
-          plus_ones: plusOnes,
-        });
+      // Call server-side API route instead of client-side Supabase
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: LAUNCH_EVENT_ID,
+          guestName: name,
+          guestEmail: email,
+          plusOnes: plusOnes,
+        }),
+      });
 
-      if (rsvpError) {
-        setError(rsvpError.message);
-        setLoading(false);
-      } else {
-        setSuccess(true);
-        setLoading(false);
-        fetchRSVPCount();
+      const result = await response.json();
 
-        // Reset form
-        setName('');
-        setEmail('');
-        setPlusOnes(0);
+      if (!response.ok) {
+        throw new Error(result.error || `Server error: ${response.status}`);
       }
+
+      setSuccess(true);
+      setLoading(false);
+      fetchRSVPCount();
+
+      // Reset form
+      setName('');
+      setEmail('');
+      setPlusOnes(0);
     } catch (err: any) {
       console.error('Failed to submit RSVP:', err);
       setError(err.message || 'Failed to submit RSVP. Please try again.');
