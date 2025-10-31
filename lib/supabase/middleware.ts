@@ -6,22 +6,43 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  // Validate environment variables before creating client
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase environment variables in middleware');
+    return supabaseResponse; // Return early without Supabase initialization
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Skip setting cookies with undefined or invalid values
+            if (value === undefined || value === null || value === '') {
+              console.warn(`Skipping cookie "${name}" with invalid value:`, value);
+              return;
+            }
+            request.cookies.set(name, value)
+          })
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Skip setting cookies with undefined or invalid values
+            if (value === undefined || value === null || value === '') {
+              console.warn(`Skipping response cookie "${name}" with invalid value:`, value);
+              return;
+            }
             supabaseResponse.cookies.set(name, value, options)
-          )
+          })
         },
       },
     }
