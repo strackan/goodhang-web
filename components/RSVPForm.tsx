@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
 interface RSVPFormProps {
@@ -38,30 +37,29 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
       console.log('Form Data:', formData);
       console.log('Event ID:', eventId);
       console.log('Current User:', currentUser);
-      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-      console.log('Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-      const supabase = createClient();
-      console.log('Supabase client created');
+      // Call server-side API route instead of client-side Supabase
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: eventId,
+          guestName: formData.guestName,
+          guestEmail: formData.guestEmail,
+          plusOnes: formData.plusOnes,
+        }),
+      });
 
-      const insertPayload = {
-        event_id: eventId,
-        guest_name: formData.guestName,
-        guest_email: formData.guestEmail,
-        plus_ones: formData.plusOnes,
-      };
-      console.log('Insert payload:', insertPayload);
+      console.log('API response status:', response.status);
 
-      // Insert RSVP (without user_id for now - using guest fields only)
-      const { data: rsvpData, error: insertError } = await supabase
-        .from('rsvps')
-        .insert(insertPayload)
-        .select()
-        .single();
+      const result = await response.json();
+      console.log('API response data:', result);
 
-      console.log('Insert result - data:', rsvpData, 'error:', insertError);
-
-      if (insertError) throw insertError;
+      if (!response.ok) {
+        throw new Error(result.error || `Server error: ${response.status}`);
+      }
 
       // Send confirmation email (non-blocking)
       // Temporarily disabled due to Resend domain setup
