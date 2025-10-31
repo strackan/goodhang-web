@@ -87,7 +87,11 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
       }, 1500);
 
     } catch (err: any) {
-      console.error('Error submitting RSVP:', err);
+      console.error('=== RSVP Error Details ===');
+      console.error('Error object:', err);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+      console.error('Full error:', JSON.stringify(err, null, 2));
       setError(err.message || 'Failed to submit RSVP. Please try again.');
     } finally {
       setLoading(false);
