@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python generate_social_images.py:*)",
+      "Bash(awk:*)",
+      "Bash(python optimize_images.py:*)",
+      "Bash(python optimize_remaining.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

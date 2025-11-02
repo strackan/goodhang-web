@@ -96,15 +96,15 @@ export default function ApplyPage() {
           </div>
 
           {/* Typeform Embed */}
-          <div className="border-2 border-neon-purple/30 bg-background-lighter p-4" style={{ minHeight: '600px' }}>
+          <div className="border-2 border-neon-purple/30 bg-background-lighter p-4 min-h-[400px] md:min-h-[600px]">
             {formId && formId !== 'YOUR_FORM_ID' ? (
               <Widget
                 id={formId}
-                style={{ width: '100%', height: '600px' }}
-                className="typeform-widget"
+                style={{ width: '100%', height: '100%' }}
+                className="typeform-widget h-[400px] md:h-[600px]"
               />
             ) : (
-              <div className="flex items-center justify-center h-[600px]">
+              <div className="flex items-center justify-center h-[400px] md:h-[600px]">
                 <div className="text-center">
                   <p className="text-neon-purple font-mono text-xl mb-4">⚠️ Typeform Not Configured</p>
                   <p className="text-foreground-dim font-mono text-sm mb-4">

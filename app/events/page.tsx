@@ -1,12 +1,23 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { EventCard } from '@/components/EventCard';
+import { MobileNav, DesktopNav } from '@/components/MobileNav';
 
 export default async function EventsPage() {
   const supabase = await createClient();
 
   // Get current user (optional, to show if they've RSVPed)
   const { data: { user } } = await supabase.auth.getUser();
+
+  // Build navigation links based on auth state
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/launch', label: 'Launch Party' },
+    { href: '/members/directory', label: 'Members' },
+    user
+      ? { href: '/members', label: 'Dashboard' }
+      : { href: '/login', label: 'Login' }
+  ];
 
   // Get all upcoming events
   const { data: upcomingEvents } = await supabase
@@ -39,25 +50,9 @@ export default async function EventsPage() {
           <Link href="/" className="font-mono text-2xl font-bold">
             <span className="neon-purple">GOOD_HANG</span>
           </Link>
-          <div className="flex gap-6 items-center">
-            <Link href="/" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-              Home
-            </Link>
-            <Link href="/launch" className="text-neon-cyan hover:text-neon-magenta transition-colors font-mono">
-              Launch Party
-            </Link>
-            <Link href="/members/directory" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-              Members
-            </Link>
-            {user ? (
-              <Link href="/members" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-                Dashboard
-              </Link>
-            ) : (
-              <Link href="/login" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-                Login
-              </Link>
-            )}
+          <div className="flex gap-4 items-center">
+            <DesktopNav links={navLinks} />
+            <MobileNav links={navLinks} />
           </div>
         </div>
       </nav>
@@ -78,7 +73,7 @@ export default async function EventsPage() {
 
           {/* Upcoming Events */}
           <div className="mb-16">
-            <h2 className="text-3xl font-bold font-mono neon-purple mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold font-mono neon-purple mb-8">
               Upcoming Events
             </h2>
 
@@ -115,7 +110,7 @@ export default async function EventsPage() {
           {/* Past Events */}
           {pastEvents && pastEvents.length > 0 && (
             <div>
-              <h2 className="text-3xl font-bold font-mono neon-magenta mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold font-mono neon-magenta mb-8">
                 Past Events
               </h2>
               <div className="grid md:grid-cols-3 gap-6">

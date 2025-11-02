@@ -1,6 +1,7 @@
 import { VHSEffects } from '@/components/VHSEffects';
 import { NeonButton } from '@/components/NeonButton';
 import Link from 'next/link';
+import { MobileNav, DesktopNav } from '@/components/MobileNav';
 
 export default function About() {
   return (
@@ -14,16 +15,21 @@ export default function About() {
             <Link href="/" className="font-mono text-2xl font-bold chromatic-aberration">
               <span className="neon-purple">GOOD_HANG</span>
             </Link>
-            <div className="flex gap-6 items-center">
-              <Link href="/about" className="text-neon-cyan transition-colors font-mono">
-                About
-              </Link>
-              <Link href="/events" className="text-foreground hover:text-neon-magenta transition-colors font-mono">
-                Events
-              </Link>
-              <Link href="/login" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-                Member Login
-              </Link>
+            <div className="flex gap-4 items-center">
+              <DesktopNav
+                links={[
+                  { href: '/about', label: 'About' },
+                  { href: '/events', label: 'Events' },
+                  { href: '/login', label: 'Member Login' },
+                ]}
+              />
+              <MobileNav
+                links={[
+                  { href: '/about', label: 'About' },
+                  { href: '/events', label: 'Events' },
+                  { href: '/login', label: 'Member Login' },
+                ]}
+              />
             </div>
           </div>
         </nav>

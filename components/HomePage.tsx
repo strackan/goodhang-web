@@ -3,6 +3,7 @@
 import { NeonButton } from '@/components/NeonButton';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { MobileNav, DesktopNav } from './MobileNav';
 
 interface HomePageProps {
   onRewatchIntro?: () => void;
@@ -71,25 +72,30 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
             <Link href="/" className="font-mono text-2xl font-bold glitch-hover">
               <span className="neon-purple">GOOD_HANG</span>
             </Link>
-            <div className="flex gap-6 items-center">
-              <Link href="/about" className="text-foreground hover:text-neon-cyan transition-colors font-mono glitch-text">
-                About
-              </Link>
-              <Link href="/events" className="text-foreground hover:text-neon-magenta transition-colors font-mono glitch-text">
-                Events
-              </Link>
-              <Link href="/login" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono glitch-text">
-                Member Login
-              </Link>
+            <div className="flex gap-4 items-center">
+              <DesktopNav
+                links={[
+                  { href: '/about', label: 'About' },
+                  { href: '/events', label: 'Events' },
+                  { href: '/login', label: 'Member Login' },
+                ]}
+              />
               {onRewatchIntro && (
                 <button
                   onClick={onRewatchIntro}
-                  className="text-foreground-dim hover:text-neon-cyan transition-colors font-mono text-sm opacity-50 hover:opacity-100 glitch-text"
+                  className="hidden md:block text-foreground-dim hover:text-neon-cyan transition-colors font-mono text-sm opacity-50 hover:opacity-100 py-2 px-3 touch-manipulation"
                   title="Rewatch the glitch intro"
                 >
                   ↻ Rewatch
                 </button>
               )}
+              <MobileNav
+                links={[
+                  { href: '/about', label: 'About' },
+                  { href: '/events', label: 'Events' },
+                  { href: '/login', label: 'Member Login' },
+                ]}
+              />
             </div>
           </div>
         </nav>

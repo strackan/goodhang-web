@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { MemberGrid } from '@/components/MemberGrid';
+import { MobileNav, DesktopNav } from '@/components/MobileNav';
 
 export default async function MemberDirectoryPage() {
   const supabase = await createClient();
@@ -24,6 +25,21 @@ export default async function MemberDirectoryPage() {
     currentProfile = data;
   }
 
+  // Build navigation links
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/launch', label: 'Launch Party' },
+  ];
+
+  if (user) {
+    navLinks.push({ href: '/members', label: 'Dashboard' });
+    if (currentProfile?.user_role === 'admin') {
+      navLinks.push({ href: '/admin', label: 'Admin' });
+    }
+  } else {
+    navLinks.push({ href: '/login', label: 'Login' });
+  }
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -32,34 +48,16 @@ export default async function MemberDirectoryPage() {
           <Link href="/" className="font-mono text-2xl font-bold">
             <span className="neon-purple">GOOD_HANG</span>
           </Link>
-          <div className="flex gap-6 items-center">
-            <Link href="/" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-              Home
-            </Link>
-            <Link href="/launch" className="text-neon-cyan hover:text-neon-magenta transition-colors font-mono">
-              Launch Party
-            </Link>
-            {user ? (
-              <>
-                <Link href="/members" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-                  Dashboard
-                </Link>
-                {currentProfile?.user_role === 'admin' && (
-                  <Link href="/admin" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-                    Admin
-                  </Link>
-                )}
-                <form action="/logout" method="POST">
-                  <button className="text-foreground-dim hover:text-neon-cyan transition-colors font-mono text-sm">
-                    Logout
-                  </button>
-                </form>
-              </>
-            ) : (
-              <Link href="/login" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-                Login
-              </Link>
+          <div className="flex gap-4 items-center">
+            <DesktopNav links={navLinks} />
+            {user && (
+              <form action="/logout" method="POST" className="hidden md:block">
+                <button className="text-foreground-dim hover:text-neon-cyan transition-colors font-mono text-sm py-2 px-3 touch-manipulation">
+                  Logout
+                </button>
+              </form>
             )}
+            <MobileNav links={navLinks} />
           </div>
         </div>
       </nav>

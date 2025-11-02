@@ -62,7 +62,7 @@ export function MemberGrid({ initialProfiles }: MemberGridProps) {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center">
           <button
             onClick={() => setFilterTier('all')}
             className={`px-6 py-2 font-mono uppercase text-sm transition-all ${
@@ -134,6 +134,7 @@ function MemberCard({ profile }: { profile: Profile }) {
               src={profile.avatar_url}
               alt={profile.name}
               fill
+              sizes="64px"
               className="object-cover"
             />
           ) : (

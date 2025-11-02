@@ -12,6 +12,17 @@ export function GlitchWrapper() {
     setIsMounted(true);
     console.log('[GlitchWrapper] Component mounted');
 
+    // Check if mobile device (< 768px)
+    const isMobile = window.innerWidth < 768;
+    console.log('[GlitchWrapper] isMobile:', isMobile, 'width:', window.innerWidth);
+
+    // Skip intro entirely on mobile devices for performance
+    if (isMobile) {
+      console.log('[GlitchWrapper] Mobile device detected - skipping intro for performance');
+      setShowIntro(false);
+      return;
+    }
+
     // Check if we should show intro
     const hasSeenGlitch = localStorage.getItem('goodhang_seen_glitch') === 'true';
     const hasEmergencySkip = localStorage.getItem('goodhang_glitch_emergency_skip') === 'true';

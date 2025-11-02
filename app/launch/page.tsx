@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { GlitchIntroV2 } from '@/components/GlitchIntroV2';
+import { MobileNav, DesktopNav } from '@/components/MobileNav';
 
 // VERSION: 2024-10-31-FIX-V2 - RSVP submission uses server-side API route
 export default function LaunchPartyPage() {
@@ -24,6 +25,16 @@ export default function LaunchPartyPage() {
 
   useEffect(() => {
     setIsMounted(true);
+
+    // Check if mobile device (< 768px) - skip intro on mobile for performance
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      console.log('[LaunchPage] Mobile device detected - skipping intro for performance');
+      setShowIntro(false);
+      fetchRSVPCount();
+      return;
+    }
 
     // Check if user has seen the glitch intro before
     const hasSeenGlitch = typeof window !== 'undefined' &&
@@ -119,13 +130,19 @@ export default function LaunchPartyPage() {
           <Link href="/" className="font-mono text-2xl font-bold">
             <span className="neon-purple">GOOD_HANG</span>
           </Link>
-          <div className="flex gap-6 items-center">
-            <Link href="/" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
-              Home
-            </Link>
-            <Link href="/apply" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
-              Apply
-            </Link>
+          <div className="flex gap-4 items-center">
+            <DesktopNav
+              links={[
+                { href: '/', label: 'Home' },
+                { href: '/apply', label: 'Apply' },
+              ]}
+            />
+            <MobileNav
+              links={[
+                { href: '/', label: 'Home' },
+                { href: '/apply', label: 'Apply' },
+              ]}
+            />
           </div>
         </div>
       </nav>
