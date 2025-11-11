@@ -3,9 +3,9 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ApplicationReviewForm } from '@/components/ApplicationReviewForm';
 
-export default async function ApplicationReviewPage({ params }: { params: { id: string } }) {
+export default async function ApplicationReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
-  const { id } = params;
+  const { id } = await params;
 
   // Get current user
   const { data: { user } } = await supabase.auth.getUser();

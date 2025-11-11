@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   eslint: {
-    // Disable ESLint during builds (warnings block production builds)
+    // Completely skip ESLint during production builds
     ignoreDuringBuilds: true,
   },
   typescript: {

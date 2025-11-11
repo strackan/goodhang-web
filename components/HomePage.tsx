@@ -109,7 +109,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-2xl">✓</span>
                   <p className="font-mono neon-cyan text-lg">
-                    Application submitted! We'll be in touch soon.
+                    Application submitted! We&apos;ll be in touch soon.
                   </p>
                 </div>
               </div>

@@ -84,14 +84,15 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
         window.location.reload();
       }, 1500);
 
-    } catch (err: any) {
-      alert('ERROR CAUGHT: ' + (err.message || err.toString()));
+    } catch (err) {
+      const error = err as Error;
+      alert('ERROR CAUGHT: ' + (error.message || error.toString()));
       console.error('=== RSVP Error Details ===');
-      console.error('Error object:', err);
-      console.error('Error message:', err.message);
-      console.error('Error stack:', err.stack);
-      console.error('Full error:', JSON.stringify(err, null, 2));
-      setError(err.message || 'Failed to submit RSVP. Please try again.');
+      console.error('Error object:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Full error:', JSON.stringify(error, null, 2));
+      setError(error.message || 'Failed to submit RSVP. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -102,10 +103,10 @@ export function RSVPForm({ eventId, currentUser }: RSVPFormProps) {
       <div className="text-center">
         <div className="text-6xl mb-4">✓</div>
         <h3 className="text-2xl font-bold font-mono neon-cyan mb-2">
-          YOU'RE ON THE LIST!
+          YOU&apos;RE ON THE LIST!
         </h3>
         <p className="text-foreground-dim font-mono">
-          We'll send you event details and reminders at <span className="text-neon-cyan">{formData.guestEmail}</span>
+          We&apos;ll send you event details and reminders at <span className="text-neon-cyan">{formData.guestEmail}</span>
         </p>
         <p className="text-foreground-dim font-mono text-sm mt-2">
           Redirecting...
