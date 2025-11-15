@@ -1,0 +1,251 @@
+{
+  "id": "core-assessment-v1",
+  "title": "Professional Skills & Personality Assessment",
+  "version": "1.0",
+  "estimatedMinutes": 12,
+  "sections": [
+    {
+      "id": "personality",
+      "title": "Personality & Work Style",
+      "description": "Help us understand your natural tendencies and preferences to provide personalized career insights",
+      "order": 1,
+      "questions": [
+        {
+          "id": "pers-1",
+          "section": "personality",
+          "order": 1,
+          "text": "After a challenging, high-intensity week at work, what recharges you most?",
+          "type": "open_ended",
+          "dimensions": ["personality"],
+          "mbti_dimension": "E/I",
+          "scoring_guidance": "Look for: Extroverts seek social connection, introverts seek solitude. Both are valid.",
+          "required": true
+        },
+        {
+          "id": "pers-2",
+          "section": "personality",
+          "order": 2,
+          "text": "When learning something new, which approach appeals to you more: (A) concrete examples with step-by-step instructions, or (B) big-picture concepts and underlying patterns? Explain why.",
+          "type": "open_ended",
+          "dimensions": ["personality"],
+          "mbti_dimension": "S/N",
+          "scoring_guidance": "(A) = Sensing, (B) = Intuitive. Look for specificity in their explanation.",
+          "required": true
+        },
+        {
+          "id": "pers-3",
+          "section": "personality",
+          "order": 3,
+          "text": "When making an important decision, do you tend to rely more on logical analysis and objective criteria, or on how the decision will affect people and relationships? Give a recent example.",
+          "type": "open_ended",
+          "dimensions": ["personality", "eq"],
+          "mbti_dimension": "T/F",
+          "scoring_guidance": "Thinking = logic first, Feeling = people impact first. Example quality matters.",
+          "required": true
+        },
+        {
+          "id": "pers-4",
+          "section": "personality",
+          "order": 4,
+          "text": "Describe your ideal work environment: Do you prefer to have things planned and settled with clear structure, or keep your options open and adapt as new information comes in?",
+          "type": "open_ended",
+          "dimensions": ["personality", "self_awareness"],
+          "mbti_dimension": "J/P",
+          "scoring_guidance": "Judging = structure/planning, Perceiving = flexibility/adaptation.",
+          "required": true
+        },
+        {
+          "id": "pers-5",
+          "section": "personality",
+          "order": 5,
+          "text": "When you're under intense pressure or stress, what's your instinctive response: (A) over-prepare and worry about details, (B) take charge and push through with action, or (C) withdraw to think and analyze the situation?",
+          "type": "open_ended",
+          "dimensions": ["personality", "self_awareness"],
+          "enneagram_indicator": "stress_response",
+          "scoring_guidance": "Maps to Enneagram stress patterns. Look for self-awareness.",
+          "required": true
+        },
+        {
+          "id": "pers-6",
+          "section": "personality",
+          "order": 6,
+          "text": "What drives you most in your work: achieving excellence and being the best, helping and connecting with others, or understanding complex systems and how things work?",
+          "type": "open_ended",
+          "dimensions": ["motivation", "personality"],
+          "enneagram_indicator": "core_motivation",
+          "scoring_guidance": "Achievement = Type 3, Connection = Type 2, Understanding = Type 5. Multiple motivations valid.",
+          "required": true
+        },
+        {
+          "id": "pers-7",
+          "section": "personality",
+          "order": 7,
+          "text": "Describe your ideal workday structure. Be specific about hours, types of tasks, breaks, and flexibility.",
+          "type": "open_ended",
+          "dimensions": ["personality", "self_awareness"],
+          "scoring_guidance": "Look for: self-awareness, honesty about needs, practical systems",
+          "required": true
+        },
+        {
+          "id": "pers-8",
+          "section": "personality",
+          "order": 8,
+          "text": "When you disagree with a teammate on an important decision, what's your instinct: address it directly and immediately, think it through privately before discussing, or try to find compromise to avoid confrontation?",
+          "type": "open_ended",
+          "dimensions": ["personality", "eq"],
+          "scoring_guidance": "No right answer. Look for awareness of their pattern and context-appropriateness.",
+          "required": true
+        },
+        {
+          "id": "pers-9",
+          "section": "personality",
+          "order": 9,
+          "text": "How do you prefer to learn new technical skills: hands-on experimentation, structured courses or tutorials, reading documentation, or watching others do it first?",
+          "type": "open_ended",
+          "dimensions": ["personality", "technical"],
+          "scoring_guidance": "Learning style reveals cognitive approach. All are valid.",
+          "required": true
+        },
+        {
+          "id": "pers-10",
+          "section": "personality",
+          "order": 10,
+          "text": "Rank these work values from most to least important to you: autonomy, impact, mastery, connection with people, and stability. Explain your top choice.",
+          "type": "open_ended",
+          "dimensions": ["motivation", "self_awareness"],
+          "scoring_guidance": "Look for clear hierarchy and articulated reasoning. Reveals core drivers.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "ai_orchestration",
+      "title": "AI & Systems Thinking",
+      "description": "Understanding your ability to work with and orchestrate AI systems",
+      "order": 2,
+      "questions": [
+        {
+          "id": "ai-orch-1",
+          "section": "ai_orchestration",
+          "order": 1,
+          "text": "How does the Internet work? Explain it to someone who's smart but non-technical.",
+          "type": "open_ended",
+          "dimensions": ["ai_readiness", "technical", "iq"],
+          "sub_score": "technical_foundation",
+          "scoring_guidance": "Technical: routers, packets, DNS, protocols. Non-technical: cat pictures, web browser. Look for clarity of explanation + depth of understanding.",
+          "required": true
+        },
+        {
+          "id": "ai-orch-2",
+          "section": "ai_orchestration",
+          "order": 2,
+          "text": "Do you currently do any 'vibe coding' or AI-assisted development? If so, please describe your process and give a few examples of things you've built or other ways you've used it. If not, describe how you currently use AI tools (if at all).",
+          "type": "open_ended",
+          "dimensions": ["ai_readiness", "technical"],
+          "sub_score": "practical_ai_use",
+          "scoring_guidance": "Look for: specific tools, actual examples, workflow integration, comfort level. No AI use is fine if honest.",
+          "required": true
+        },
+        {
+          "id": "ai-orch-3",
+          "section": "ai_orchestration",
+          "order": 3,
+          "text": "What's the difference between prompt-engineering and agentification? When would you use one vs. the other?",
+          "type": "open_ended",
+          "dimensions": ["ai_readiness", "iq"],
+          "sub_score": "conceptual_understanding",
+          "scoring_guidance": "Prompt = one-shot instruction. Agent = autonomous, multi-step, tool-using system. Look for understanding of complexity threshold.",
+          "required": true
+        },
+        {
+          "id": "ai-orch-4",
+          "section": "ai_orchestration",
+          "order": 4,
+          "text": "Design a multi-agent system to handle customer onboarding for a SaaS product. What agents would you create, what are their responsibilities, how do they hand off between each other, and what could break?",
+          "type": "open_ended",
+          "dimensions": ["ai_readiness", "iq", "organization"],
+          "sub_score": "systems_thinking",
+          "scoring_guidance": "Look for: clear agent boundaries, thoughtful handoff design, awareness of failure modes, realistic complexity assessment.",
+          "required": true
+        },
+        {
+          "id": "ai-orch-5",
+          "section": "ai_orchestration",
+          "order": 5,
+          "text": "When should you NOT use AI agents? Give 3 specific scenarios where a simple prompt, traditional code, or human decision-making is better than an agent-based approach.",
+          "type": "open_ended",
+          "dimensions": ["ai_readiness", "iq"],
+          "sub_score": "judgment",
+          "scoring_guidance": "Look for: cost awareness, simplicity preference when appropriate, understanding of agent overhead, human-in-loop needs.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "professional_context",
+      "title": "Professional Background",
+      "description": "Understanding your experience and career trajectory",
+      "order": 3,
+      "questions": [
+        {
+          "id": "prof-1",
+          "section": "professional_context",
+          "order": 1,
+          "text": "How many years of professional experience do you have in your current field? What roles have you held, and what was your career progression?",
+          "type": "open_ended",
+          "dimensions": ["work_history"],
+          "scoring_guidance": "Extract: years of experience, role progression, field clarity. Used for score weighting.",
+          "required": true
+        },
+        {
+          "id": "prof-2",
+          "section": "professional_context",
+          "order": 2,
+          "text": "On a scale of 1-10, how technical are you? (1 = no coding experience, 10 = senior engineer). Then give a specific example that demonstrates your technical capability at that level.",
+          "type": "open_ended",
+          "dimensions": ["technical", "self_awareness"],
+          "scoring_guidance": "Score matters less than example quality. Look for honest self-assessment + evidence.",
+          "required": true
+        },
+        {
+          "id": "prof-3",
+          "section": "professional_context",
+          "order": 3,
+          "text": "Where do you want to be in 3 years? Be specific about the role, skills you want to develop, and impact you want to have.",
+          "type": "open_ended",
+          "dimensions": ["motivation", "self_awareness"],
+          "scoring_guidance": "Look for: clarity of vision, alignment with strengths, realistic ambition, growth mindset.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "culture_fit",
+      "title": "Culture & Self-Awareness",
+      "description": "Understanding your work style and growth mindset",
+      "order": 4,
+      "questions": [
+        {
+          "id": "culture-1",
+          "section": "culture_fit",
+          "order": 1,
+          "text": "What's a joke format, meme, or type of humor that makes you irrationally annoyed? Why does it bother you?",
+          "type": "open_ended",
+          "dimensions": ["culture_fit", "personality"],
+          "scoring_guidance": "Look for: specific taste, articulated reasoning, not taking self too seriously. Red flag: 'humor is unprofessional'",
+          "required": true
+        },
+        {
+          "id": "culture-2",
+          "section": "culture_fit",
+          "order": 2,
+          "text": "What's a weakness or limitation you've successfully compensated for? What system, tool, or strategy did you build to work around it?",
+          "type": "open_ended",
+          "dimensions": ["self_awareness"],
+          "scoring_guidance": "Look for: honest weakness (not humble-brag), specific compensation system, ongoing management. Red flag: 'I have no weaknesses'",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
