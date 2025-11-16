@@ -1,18 +1,30 @@
 'use client';
 
 /**
- * Assessment Results Page
- * Displays the scored assessment results including:
- * - Overall score and tier
- * - Archetype
- * - 12-dimension scores
- * - Green/red flags
- * - Recommendations
+ * Enhanced Assessment Results Page (Phase 1)
+ *
+ * Displays comprehensive assessment results including:
+ * - Personality Profile (MBTI + Enneagram)
+ * - Badge Showcase
+ * - Category Scores (Technical/Emotional/Creative)
+ * - AI Orchestration Scores
+ * - 14 Dimension Breakdown
+ * - Best Fit Roles
+ * - Public Summary
  */
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import type { AssessmentResults } from '@/lib/assessment/types';
+import { ResultsHeader } from '@/components/assessment/results/ResultsHeader';
+import { PersonalityProfileCard } from '@/components/assessment/results/PersonalityProfileCard';
+import { BadgeShowcase } from '@/components/assessment/results/BadgeShowcase';
+import { CategoryScoresSection } from '@/components/assessment/results/CategoryScoresSection';
+import { AIOrchestrationCard } from '@/components/assessment/results/AIOrchestrationCard';
+import { DimensionBreakdown } from '@/components/assessment/results/DimensionBreakdown';
+import { BestFitRolesCard } from '@/components/assessment/results/BestFitRolesCard';
+import { PublicSummaryCard } from '@/components/assessment/results/PublicSummaryCard';
+import { ResultsActions } from '@/components/assessment/results/ResultsActions';
 
 export default function AssessmentResultsPage() {
   const params = useParams();
@@ -75,108 +87,64 @@ export default function AssessmentResultsPage() {
     );
   }
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case 'top_1':
-        return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
-      case 'benched':
-        return 'text-green-400 border-green-500/30 bg-green-500/10';
-      case 'passed':
-        return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-      default:
-        return 'text-gray-400 border-gray-500/30 bg-gray-500/10';
-    }
-  };
-
-  const getTierLabel = (tier: string) => {
-    switch (tier) {
-      case 'top_1':
-        return 'Top 1% Candidate';
-      case 'benched':
-        return 'Talent Bench';
-      case 'passed':
-        return 'Assessed';
-      default:
-        return tier;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-6xl mx-auto py-12 px-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            Your CS Assessment Results
-          </h1>
-          <p className="text-gray-400">
-            Analyzed on {new Date(results.analyzed_at).toLocaleDateString()}
-          </p>
-        </div>
+        <ResultsHeader
+          archetype={results.archetype}
+          overall_score={results.overall_score}
+          tier={results.tier}
+        />
 
-        {/* Overall Score & Tier */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Overall Score */}
-          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 text-center">
-            <h2 className="text-gray-400 text-sm uppercase tracking-wide mb-2">Overall Score</h2>
-            <div className="text-6xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-              {results.overall_score}
-            </div>
-            <p className="text-gray-300">out of 100</p>
-          </div>
+        {/* Personality Profile */}
+        {results.personality_profile && (
+          <PersonalityProfileCard profile={results.personality_profile} />
+        )}
 
-          {/* Tier */}
-          <div className={`border rounded-lg p-8 text-center ${getTierColor(results.tier)}`}>
-            <h2 className="text-sm uppercase tracking-wide mb-2 opacity-80">Tier</h2>
-            <div className="text-3xl font-bold mb-2">{getTierLabel(results.tier)}</div>
-            {results.tier === 'top_1' && <p className="text-sm opacity-80">Elite CS Professional</p>}
-            {results.tier === 'benched' && <p className="text-sm opacity-80">Ready for Opportunities</p>}
-          </div>
-        </div>
+        {/* Badge Showcase */}
+        {results.badges && <BadgeShowcase badges={results.badges} />}
 
-        {/* Archetype */}
-        <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-purple-300">Your Archetype</h2>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-3xl font-bold text-white">{results.archetype}</h3>
-            <span className="text-sm text-gray-400">
-              {results.archetype_confidence} confidence
-            </span>
-          </div>
-        </div>
+        {/* Category Scores (Big 3) */}
+        {results.category_scores && (
+          <CategoryScoresSection categoryScores={results.category_scores} />
+        )}
 
-        {/* Dimensions */}
-        <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 mb-8">
-          <h2 className="text-2xl font-semibold mb-6 text-purple-300">Dimension Scores</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(results.dimensions).map(([key, value]) => (
-              <div key={key} className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300 capitalize">{key.replace(/_/g, ' ')}</span>
-                  <span className="text-white font-semibold">{value}/100</span>
-                </div>
-                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 transition-all duration-300"
-                    style={{ width: `${value}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+        {/* AI Orchestration Deep Dive */}
+        {results.ai_orchestration_scores && (
+          <AIOrchestrationCard scores={results.ai_orchestration_scores} />
+        )}
+
+        {/* 14 Dimension Breakdown */}
+        <DimensionBreakdown dimensions={results.dimensions} />
+
+        {/* Best Fit Roles */}
+        <BestFitRolesCard roles={results.best_fit_roles} />
+
+        {/* Public Summary */}
+        {results.public_summary && (
+          <PublicSummaryCard summary={results.public_summary} />
+        )}
+
+        {/* Legacy Sections (for backward compatibility) */}
+        {results.recommendation && (
+          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 mb-8">
+            <h2 className="text-2xl font-semibold mb-4 text-purple-300">Recommendation</h2>
+            <p className="text-gray-300 leading-relaxed">{results.recommendation}</p>
           </div>
-        </div>
+        )}
 
         {/* Flags */}
-        {(results.flags.green_flags.length > 0 || results.flags.red_flags.length > 0) && (
+        {(results.flags?.green_flags?.length > 0 || results.flags?.red_flags?.length > 0) && (
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {/* Green Flags */}
             {results.flags.green_flags.length > 0 && (
               <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-green-400 mb-4">✓ Strengths</h3>
+                <h3 className="text-xl font-semibold text-green-400 mb-4">Strengths</h3>
                 <ul className="space-y-2">
                   {results.flags.green_flags.map((flag, idx) => (
                     <li key={idx} className="text-gray-300 text-sm">
-                      • {flag}
+                      {flag}
                     </li>
                   ))}
                 </ul>
@@ -186,11 +154,11 @@ export default function AssessmentResultsPage() {
             {/* Red Flags */}
             {results.flags.red_flags.length > 0 && (
               <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-red-400 mb-4">⚠ Areas to Develop</h3>
+                <h3 className="text-xl font-semibold text-red-400 mb-4">Areas to Develop</h3>
                 <ul className="space-y-2">
                   {results.flags.red_flags.map((flag, idx) => (
                     <li key={idx} className="text-gray-300 text-sm">
-                      • {flag}
+                      {flag}
                     </li>
                   ))}
                 </ul>
@@ -199,40 +167,11 @@ export default function AssessmentResultsPage() {
           </div>
         )}
 
-        {/* Recommendation */}
-        {results.recommendation && (
-          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-4 text-purple-300">Recommendation</h2>
-            <p className="text-gray-300 leading-relaxed">{results.recommendation}</p>
-          </div>
-        )}
-
-        {/* Best Fit Roles */}
-        {results.best_fit_roles && results.best_fit_roles.length > 0 && (
-          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-4 text-purple-300">Best Fit Roles</h2>
-            <div className="flex flex-wrap gap-3">
-              {results.best_fit_roles.map((role, idx) => (
-                <span
-                  key={idx}
-                  className="px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300"
-                >
-                  {role}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Actions */}
-        <div className="text-center">
-          <button
-            onClick={() => router.push('/members')}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-purple-500/50"
-          >
-            Go to Members Area
-          </button>
-        </div>
+        <ResultsActions
+          sessionId={sessionId}
+          isPublished={results.is_published || false}
+        />
       </div>
     </div>
   );

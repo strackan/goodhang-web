@@ -15,6 +15,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAssessment } from '@/lib/hooks/useAssessment';
 import { MicrophoneButton } from '@/components/assessment/MicrophoneButton';
+import { SectionTimeline } from '@/components/assessment/SectionTimeline';
 
 export default function AssessmentInterviewPage() {
   const router = useRouter();
@@ -22,6 +23,8 @@ export default function AssessmentInterviewPage() {
     status,
     currentQuestion,
     currentSection,
+    currentSectionIndex,
+    assessment,
     progress,
     isFirstQuestion,
     isLastQuestion,
@@ -39,6 +42,7 @@ export default function AssessmentInterviewPage() {
 
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [currentSectionIndexState, setCurrentSectionIndexState] = useState(0);
 
   const loadingMessages = [
     "Analyzing your responses...",
@@ -46,6 +50,11 @@ export default function AssessmentInterviewPage() {
     "Evaluating your scores across 12 dimensions...",
     "Preparing your results...",
   ];
+
+  const handleNavigateToSection = (sectionIndex: number) => {
+    setCurrentSectionIndexState(sectionIndex);
+    // The actual navigation is handled by the useAssessment hook
+  };
 
   // Auto-start assessment if not started
   useEffect(() => {
@@ -146,6 +155,16 @@ export default function AssessmentInterviewPage() {
     <div className="min-h-screen bg-black text-white">
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-purple-500/30">
+        {/* Section Timeline */}
+        {assessment && (
+          <SectionTimeline
+            sections={assessment.sections}
+            currentSectionIndex={currentSectionIndex}
+            answers={answers}
+            onNavigate={handleNavigateToSection}
+          />
+        )}
+
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-4">

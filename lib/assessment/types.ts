@@ -75,6 +75,44 @@ export type AssessmentTier = 'top_1' | 'benched' | 'passed';
 
 export type ArchetypeConfidence = 'high' | 'medium' | 'low';
 
+// Enhanced Results Types (Phase 1)
+export interface PersonalityProfile {
+  mbti: string;
+  enneagram: string;
+  traits: string[];
+}
+
+export interface AIOrchestrationScores {
+  technical_foundation: number;
+  practical_use: number;
+  conceptual_understanding: number;
+  systems_thinking: number;
+  judgment: number;
+}
+
+export interface CategoryScores {
+  technical: {
+    overall: number;
+    subscores: Record<string, number>;
+  };
+  emotional: {
+    overall: number;
+    subscores: Record<string, number>;
+  };
+  creative: {
+    overall: number;
+    subscores: Record<string, number>;
+  };
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  earned_at: string;
+}
+
 export interface AssessmentResults {
   session_id: string;
   user_id: string;
@@ -87,4 +125,11 @@ export interface AssessmentResults {
   recommendation: string;
   best_fit_roles: string[];
   analyzed_at: string;
+  // Enhanced fields (Phase 1)
+  personality_profile?: PersonalityProfile;
+  ai_orchestration_scores?: AIOrchestrationScores;
+  category_scores?: CategoryScores;
+  badges?: Badge[];
+  public_summary?: string;
+  is_published?: boolean;
 }
