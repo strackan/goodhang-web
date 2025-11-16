@@ -24,7 +24,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) => {
             // Skip setting cookies with undefined or invalid values
             if (value === undefined || value === null || value === '') {
               console.warn(`Skipping cookie "${name}" with invalid value:`, value);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // This endpoint uses service role to clean up duplicate RSVPs
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Create a service role client (bypasses RLS)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;

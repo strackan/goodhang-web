@@ -7,8 +7,8 @@ import { AssessmentResults, Badge } from '@/lib/assessment/types';
 import { BadgeEvaluatorService } from '@/lib/services/BadgeEvaluatorService';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { sessionId } = params;
+    const { sessionId } = await params;
 
     // Fetch session
     const { data: session, error: fetchError } = await supabase

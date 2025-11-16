@@ -15,7 +15,7 @@ export function buildScoringPrompt(transcript: any[]): string {
     })
     .join('\n\n');
 
-  return `You are an expert CS (Customer Success) talent assessor. You've just conducted an interview with a CS professional. Based on the interview transcript below, you will score them across 12 dimensions and classify their archetype.
+  return `You are an expert CS (Customer Success) talent assessor. You've just conducted an interview with a CS professional. Based on the interview transcript below, you will score them across 14 dimensions and classify their archetype.
 
 # Interview Transcript
 
@@ -76,6 +76,12 @@ ${formatRubric('passions')}
 ### Culture Fit
 ${formatRubric('culture_fit')}
 
+### Organization
+${formatRubric('organization')}
+
+### Executive Leadership
+${formatRubric('executive_leadership')}
+
 ## 2. Archetype Classification
 
 Choose the archetype that best fits this candidate:
@@ -109,6 +115,8 @@ Calculate weighted average (0-100):
 - Work History: 5%
 - Passions: 5%
 - Culture Fit: 5%
+- Organization: 10%
+- Executive Leadership: 5%
 
 ## 5. Red Flags
 
@@ -164,7 +172,9 @@ Return ONLY valid JSON matching this structure:
     "motivation": 85,
     "work_history": 70,
     "passions": 80,
-    "culture_fit": 88
+    "culture_fit": 88,
+    "organization": 82,
+    "executive_leadership": 75
   },
   "archetype": "Technical Builder",
   "archetype_confidence": "high",

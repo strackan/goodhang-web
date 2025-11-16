@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AssessmentConfig } from '@/lib/assessment/types';
 import coreQuestions from '@/lib/assessment/core-questions.json';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = await createClient();
 
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       session_id: session.id,
       status: session.status,
       progress: {
-        current_section: session.current_section || coreQuestions.sections[0].id,
+        current_section: session.current_section || coreQuestions.sections[0]?.id || '',
         current_question: session.current_question || 0,
         total_questions: totalQuestions,
         percentage: Math.round((answersCount / totalQuestions) * 100),

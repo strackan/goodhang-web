@@ -399,6 +399,98 @@ export const SCORING_RUBRICS: DimensionRubric[] = [
       },
     ],
   },
+  {
+    dimension: 'organization',
+    description: 'Systems thinking, structured approach, organizational ability',
+    scoreRanges: [
+      {
+        range: '90-100 (Exceptional)',
+        score: 95,
+        indicators: [
+          'Highly systematic and structured',
+          'Creates frameworks for complex problems',
+          'Sees connections between disparate systems',
+          'Manages multiple priorities effectively',
+          'Proactively organizes information',
+        ],
+      },
+      {
+        range: '75-89 (Strong)',
+        score: 82,
+        indicators: [
+          'Good organizational skills',
+          'Structured problem-solving approach',
+          'Handles complexity well',
+          'Uses systems thinking',
+        ],
+      },
+      {
+        range: '60-74 (Competent)',
+        score: 67,
+        indicators: [
+          'Basic organizational ability',
+          'May struggle with high complexity',
+          'Somewhat structured',
+        ],
+      },
+      {
+        range: '<60 (Developing)',
+        score: 50,
+        indicators: [
+          'Disorganized approach',
+          'Struggles with multiple priorities',
+          'Reactive rather than systematic',
+        ],
+      },
+    ],
+  },
+  {
+    dimension: 'executive_leadership',
+    description: 'Leadership capability, strategic thinking, executive presence, decision-making',
+    scoreRanges: [
+      {
+        range: '90-100 (Exceptional)',
+        score: 95,
+        indicators: [
+          'Natural leadership ability',
+          'Strategic thinker with vision',
+          'Makes confident, well-reasoned decisions',
+          'Inspires and influences others',
+          'Executive presence and gravitas',
+          'Handles ambiguity and complexity',
+        ],
+      },
+      {
+        range: '75-89 (Strong)',
+        score: 82,
+        indicators: [
+          'Emerging leadership skills',
+          'Good strategic thinking',
+          'Confident decision-maker',
+          'Growing executive presence',
+        ],
+      },
+      {
+        range: '60-74 (Competent)',
+        score: 67,
+        indicators: [
+          'Basic leadership capability',
+          'Tactical rather than strategic',
+          'Hesitant with big decisions',
+        ],
+      },
+      {
+        range: '<60 (Developing)',
+        score: 50,
+        indicators: [
+          'Limited leadership experience',
+          'Avoids decision-making',
+          'Lacks strategic perspective',
+          'No executive presence yet',
+        ],
+      },
+    ],
+  },
 ];
 
 // Tier routing based on overall score

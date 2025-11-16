@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server';
 import { AssessmentScoringService } from '@/lib/services/AssessmentScoringService';
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -22,7 +22,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { sessionId } = params;
+    const { sessionId } = await params;
 
     // Fetch session
     const { data: session, error: fetchError } = await supabase

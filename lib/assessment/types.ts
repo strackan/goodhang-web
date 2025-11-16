@@ -86,10 +86,24 @@ export type AssessmentTier = 'top_1' | 'benched' | 'passed';
 
 export type ArchetypeConfidence = 'high' | 'medium' | 'low';
 
+// MBTI Personality Types (all 16 types)
+export type PersonalityType =
+  | 'INTJ' | 'INTP' | 'ENTJ' | 'ENTP'
+  | 'INFJ' | 'INFP' | 'ENFJ' | 'ENFP'
+  | 'ISTJ' | 'ISFJ' | 'ESTJ' | 'ESFJ'
+  | 'ISTP' | 'ISFP' | 'ESTP' | 'ESFP';
+
+// Enneagram Types
+export type EnneagramType =
+  | 'Type 1' | 'Type 2' | 'Type 3' | 'Type 4' | 'Type 5'
+  | 'Type 6' | 'Type 7' | 'Type 8' | 'Type 9';
+
+export type CategoryType = 'technical' | 'emotional' | 'creative';
+
 // Enhanced Results Types (Phase 1)
 export interface PersonalityProfile {
-  mbti: string; // e.g., "INTJ"
-  enneagram: string; // e.g., "Type 5"
+  mbti: PersonalityType; // e.g., "INTJ"
+  enneagram: EnneagramType; // e.g., "Type 5"
   traits: string[]; // e.g., ["Analytical", "Independent", "Strategic"]
 }
 

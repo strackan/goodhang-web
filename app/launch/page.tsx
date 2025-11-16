@@ -5,31 +5,27 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { GlitchIntroV2 } from '@/components/GlitchIntroV2';
 import { MobileNav, DesktopNav } from '@/components/MobileNav';
+import { RSVPForm } from '@/components/RSVPForm';
+import { useMobileDetection } from '@/lib/hooks/useMobileDetection';
 
 // VERSION: 2024-10-31-FIX-V2 - RSVP submission uses server-side API route
 export default function LaunchPartyPage() {
   console.log('Launch Page Version: 2024-10-31-FIX-V2 - RSVP uses API route to avoid Headers error');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [plusOnes, setPlusOnes] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [rsvpCount, setRsvpCount] = useState<number>(0);
   const [showIntro, setShowIntro] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [submittedEmail, setSubmittedEmail] = useState('');
   const [showVideoModal, setShowVideoModal] = useState(false);
 
   // Hardcoded launch event ID - created via migration 002_launch_event.sql
   const LAUNCH_EVENT_ID = '00000000-0000-0000-0000-000000000001';
 
+  // Use mobile detection hook
+  const { isMobile } = useMobileDetection();
+
   useEffect(() => {
     setIsMounted(true);
 
-    // Check if mobile device (< 768px) - skip intro on mobile for performance
-    const isMobile = window.innerWidth < 768;
-
+    // Skip intro on mobile for performance
     if (isMobile) {
       console.log('[LaunchPage] Mobile device detected - skipping intro for performance');
       setShowIntro(false);
@@ -46,7 +42,7 @@ export default function LaunchPartyPage() {
     }
 
     fetchRSVPCount();
-  }, []);
+  }, [isMobile]);
 
   const fetchRSVPCount = async () => {
     try {
@@ -63,49 +59,6 @@ export default function LaunchPartyPage() {
     } catch (err) {
       console.error('Failed to fetch RSVP count:', err);
       // Silently fail - the count is not critical for the form to work
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Call server-side API route instead of client-side Supabase
-      const response = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          eventId: LAUNCH_EVENT_ID,
-          guestName: name,
-          guestEmail: email,
-          plusOnes: plusOnes,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || `Server error: ${response.status}`);
-      }
-
-      // Save email before resetting form
-      setSubmittedEmail(email);
-      setSuccess(true);
-      setLoading(false);
-      fetchRSVPCount();
-
-      // Reset form
-      setName('');
-      setEmail('');
-      setPlusOnes(0);
-    } catch (err: any) {
-      console.error('Failed to submit RSVP:', err);
-      setError(err.message || 'Failed to submit RSVP. Please try again.');
-      setLoading(false);
     }
   };
 
@@ -280,100 +233,21 @@ export default function LaunchPartyPage() {
           )}
 
           {/* RSVP Form */}
-          {!success ? (
-            <div id="rsvp-form" className="border-2 border-neon-purple/30 bg-background-lighter p-8 md:p-12 scroll-mt-24">
-              <h2 className="text-3xl font-bold font-mono neon-purple mb-4">
-                RSVP NOW
-              </h2>
-              <div className="mb-6 p-3 border border-neon-magenta/50 bg-neon-magenta/10">
-                <p className="text-neon-magenta font-mono text-sm font-bold">
-                  ⚡ LIMITED SPOTS AVAILABLE • First Come, First Served
-                </p>
-              </div>
-              <p className="text-foreground-dim mb-8 font-mono">
-                Reserve your spot. We'll send event updates and reminders.
+          <div id="rsvp-form" className="border-2 border-neon-purple/30 bg-background-lighter p-8 md:p-12 scroll-mt-24">
+            <h2 className="text-3xl font-bold font-mono neon-purple mb-4">
+              RSVP NOW
+            </h2>
+            <div className="mb-6 p-3 border border-neon-magenta/50 bg-neon-magenta/10">
+              <p className="text-neon-magenta font-mono text-sm font-bold">
+                ⚡ LIMITED SPOTS AVAILABLE • First Come, First Served
               </p>
-
-              {error && (
-                <div className="mb-4 p-3 border border-red-500/50 bg-red-500/10 text-red-400 font-mono text-sm">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-mono text-foreground mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors"
-                    placeholder="Jane Doe"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-mono text-foreground mb-2">
-                    Email *
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors"
-                    placeholder="your@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="plusOnes" className="block text-sm font-mono text-foreground mb-2">
-                    Plus Ones
-                  </label>
-                  <select
-                    id="plusOnes"
-                    value={plusOnes}
-                    onChange={(e) => setPlusOnes(Number(e.target.value))}
-                    className="w-full px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors"
-                  >
-                    <option value="0">Just me</option>
-                    <option value="1">+1</option>
-                    <option value="2">+2</option>
-                    <option value="3">+3</option>
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Submitting...' : 'Count Me In'}
-                </button>
-              </form>
             </div>
-          ) : (
-            <div className="border-2 border-neon-cyan/30 bg-background-lighter p-8 md:p-12 text-center">
-              <div className="text-6xl mb-4">✓</div>
-              <h2 className="text-3xl font-bold font-mono neon-cyan mb-4">
-                YOU'RE ON THE LIST!
-              </h2>
-              <p className="text-foreground-dim font-mono mb-8">
-                We'll send you event details and reminders at <span className="text-neon-purple">{submittedEmail}</span>
-              </p>
-              <Link
-                href="/"
-                className="inline-block px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)]"
-              >
-                Return to Homepage
-              </Link>
-            </div>
-          )}
+            <p className="text-foreground-dim mb-8 font-mono">
+              Reserve your spot. We'll send event updates and reminders.
+            </p>
+
+            <RSVPForm eventId={LAUNCH_EVENT_ID} currentUser={null} />
+          </div>
 
           {/* Footer Note */}
           <div className="mt-12 text-center">

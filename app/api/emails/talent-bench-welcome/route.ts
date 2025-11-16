@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resend, FROM_EMAIL } from '@/lib/resend/client';
-import { generateTalentBenchWelcomeHTML } from '@/lib/resend/templates';
+// import { resend, FROM_EMAIL } from '@/lib/resend/client';
+// TODO: Implement generateTalentBenchWelcomeHTML in templates.ts
+// import { generateTalentBenchWelcomeHTML } from '@/lib/resend/templates';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
+  // TODO: Implement this endpoint once generateTalentBenchWelcomeHTML is ready
+  return NextResponse.json(
+    { error: 'Endpoint not yet implemented' },
+    { status: 501 }
+  );
+
+  /* Implementation template for when generateTalentBenchWelcomeHTML is ready:
   try {
     const body = await request.json();
     const { email, name, tier, archetype, overallScore, bestFitRoles } = body;
@@ -63,4 +71,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+  */
 }

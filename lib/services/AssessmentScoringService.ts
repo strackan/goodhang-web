@@ -59,7 +59,7 @@ export class AssessmentScoringService {
       dimensions: claudeScoring.dimensions,
       category_scores: categoryScores,
       overall_score: overallScore,
-      experience_years: experienceYears,
+      ...(experienceYears !== undefined && { experience_years: experienceYears }),
     });
 
     const badges = BadgeEvaluatorService.formatBadgesForResponse(badgeIds);

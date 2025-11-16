@@ -13,7 +13,7 @@ interface AnswerRequestBody {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -28,7 +28,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { sessionId } = params;
+    const { sessionId } = await params;
     const body: AnswerRequestBody = await request.json();
     const { question_id, answer, current_section, current_question } = body;
 

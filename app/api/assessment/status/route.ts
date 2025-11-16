@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AssessmentStatusResponse } from '@/lib/assessment/types';
 import coreQuestions from '@/lib/assessment/core-questions.json';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
 
