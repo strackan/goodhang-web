@@ -1,12 +1,15 @@
 // POST /api/assessment/[sessionId]/answer
-// Submit an answer to a question
-// - Appends Q&A to transcript
-// - Updates progress (section/question index)
-// - Auto-saves progress
+// Saves answer with auto-save functionality
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type { InterviewMessage } from '@/lib/assessment/types';
+
+interface AnswerRequestBody {
+  question_id: string;
+  answer: string;
+  current_section?: string;
+  current_question?: number;
+}
 
 export async function POST(
   request: NextRequest,
@@ -14,9 +17,8 @@ export async function POST(
 ) {
   try {
     const supabase = await createClient();
-    const sessionId = params.sessionId;
 
-    // Verify authentication
+    // Get authenticated user
     const {
       data: { user },
       error: authError,
@@ -26,80 +28,87 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const body = await request.json();
-    const { question_id, question_text, answer, section_index, question_index } = body;
+    const { sessionId } = params;
+    const body: AnswerRequestBody = await request.json();
+    const { question_id, answer, current_section, current_question } = body;
 
-    // Validate required fields
-    if (!question_id || !question_text || !answer) {
+    if (!question_id || !answer) {
       return NextResponse.json(
-        { error: 'Missing required fields: question_id, question_text, answer' },
+        { error: 'Missing question_id or answer' },
         { status: 400 }
       );
     }
 
-    // Get session to verify ownership and get existing transcript
-    const { data: session, error: sessionError } = await supabase
+    // Fetch existing session
+    const { data: session, error: fetchError } = await supabase
       .from('cs_assessment_sessions')
       .select('*')
       .eq('id', sessionId)
+      .eq('user_id', user.id)
       .single();
 
-    if (sessionError || !session) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
-    }
-
-    // Verify user owns this session
-    if (session.user_id !== user.id) {
+    if (fetchError || !session) {
+      console.error('Error fetching session:', fetchError);
       return NextResponse.json(
-        { error: 'Forbidden - session ownership mismatch' },
-        { status: 403 }
+        { error: 'Session not found or unauthorized' },
+        { status: 404 }
       );
     }
 
-    // Build new transcript entries
-    const existingTranscript = (session.interview_transcript as InterviewMessage[]) || [];
+    if (session.status === 'completed') {
+      return NextResponse.json(
+        { error: 'Cannot modify completed assessment' },
+        { status: 400 }
+      );
+    }
 
-    const questionMessage: InterviewMessage = {
-      role: 'assistant',
-      content: question_text,
-      timestamp: new Date().toISOString(),
+    // Update answers
+    const updatedAnswers = {
+      ...(session.answers || {}),
+      [question_id]: {
+        question_id,
+        answer,
+        answered_at: new Date().toISOString(),
+      },
     };
 
-    const answerMessage: InterviewMessage = {
-      role: 'user',
-      content: answer,
-      timestamp: new Date().toISOString(),
+    // Build update object
+    const updateData: any = {
+      answers: updatedAnswers,
+      status: 'in_progress',
     };
 
-    const updatedTranscript = [...existingTranscript, questionMessage, answerMessage];
+    if (current_section) {
+      updateData.current_section = current_section;
+    }
 
-    // Update session with new transcript and progress
+    if (current_question !== undefined) {
+      updateData.current_question = current_question;
+    }
+
+    // Save to database
     const { error: updateError } = await supabase
       .from('cs_assessment_sessions')
-      .update({
-        interview_transcript: updatedTranscript,
-        current_section_index: section_index !== undefined ? section_index : session.current_section_index,
-        current_question_index: question_index !== undefined ? question_index : session.current_question_index,
-        last_activity_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', sessionId);
 
     if (updateError) {
-      console.error('Error updating session transcript:', updateError);
-      return NextResponse.json({ error: 'Failed to save answer' }, { status: 500 });
+      console.error('Error updating session:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to save answer' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Answer saved successfully',
-      question_id,
+      session_id: sessionId,
+      saved_at: new Date().toISOString(),
     });
-  } catch (error: any) {
-    console.error('Error saving answer:', error);
+  } catch (error) {
+    console.error('Error in /api/assessment/[sessionId]/answer:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

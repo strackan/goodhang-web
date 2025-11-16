@@ -1,52 +1,96 @@
+// GET /api/assessment/status
+// Returns current user's assessment status
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { AssessmentStatusResponse } from '@/lib/assessment/types';
+import coreQuestions from '@/lib/assessment/core-questions.json';
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Get authenticated user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Fetch latest session for user
+    const { data: session, error: fetchError } = await supabase
+      .from('cs_assessment_sessions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error('Error fetching session:', fetchError);
+      return NextResponse.json(
+        { error: 'Failed to fetch assessment status' },
+        { status: 500 }
+      );
+    }
+
+    // No session exists
+    if (!session) {
+      const response: AssessmentStatusResponse = {
+        status: 'not_started',
+      };
+      return NextResponse.json(response);
+    }
+
+    // Calculate total questions
+    const totalQuestions = (coreQuestions as any).sections.reduce(
+      (sum: number, section: any) => sum + section.questions.length,
+      0
+    );
+
+    // Session in progress
+    if (session.status === 'in_progress' || session.status === 'not_started') {
+      const answersCount = Object.keys(session.answers || {}).length;
+      const percentage = Math.round((answersCount / totalQuestions) * 100);
+
+      const response: AssessmentStatusResponse = {
+        status: 'in_progress',
+        session_id: session.id,
+        progress: {
+          percentage,
+          questions_answered: answersCount,
+          total_questions: totalQuestions,
+        },
+      };
+      return NextResponse.json(response);
+    }
+
+    // Session completed
+    if (session.status === 'completed') {
+      const response: AssessmentStatusResponse = {
+        status: 'completed',
+        session_id: session.id,
+        preview: {
+          overall_score: session.overall_score,
+          archetype: session.archetype,
+        },
+      };
+      return NextResponse.json(response);
+    }
+
+    // Unknown status
+    return NextResponse.json(
+      { error: 'Unknown assessment status' },
+      { status: 500 }
+    );
+  } catch (error) {
+    console.error('Error in /api/assessment/status:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
-
-  // Get most recent session
-  const { data: session, error } = await supabase
-    .from('cs_assessment_sessions')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('started_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  // No assessment yet
-  if (!session) {
-    return NextResponse.json({ status: 'not_started' });
-  }
-
-  // Completed
-  if (session.status === 'completed') {
-    return NextResponse.json({
-      status: 'completed',
-      session_id: session.id,
-      overall_score: session.overall_score,
-      archetype: session.archetype
-    });
-  }
-
-  // In progress
-  const totalQuestions = 20; // Core assessment questions
-  const answeredCount = (session.interview_transcript as any[]).filter(
-    msg => msg.role === 'user'
-  ).length;
-  const progress = Math.round((answeredCount / totalQuestions) * 100);
-
-  return NextResponse.json({
-    status: 'in_progress',
-    session_id: session.id,
-    progress
-  });
 }

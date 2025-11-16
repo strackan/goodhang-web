@@ -1,14 +1,9 @@
 // POST /api/assessment/[sessionId]/complete
-// Complete the assessment and trigger AI scoring
-// - Validates all questions answered
-// - Calls Claude API for scoring
-// - Updates session with results
-// - Marks session as completed
+// Triggers Claude AI scoring and completes the assessment
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { AssessmentScoringService } from '@/lib/services/AssessmentScoringService';
-import type { InterviewMessage } from '@/lib/assessment/types';
 
 export async function POST(
   request: NextRequest,
@@ -16,9 +11,8 @@ export async function POST(
 ) {
   try {
     const supabase = await createClient();
-    const sessionId = params.sessionId;
 
-    // Verify authentication
+    // Get authenticated user
     const {
       data: { user },
       error: authError,
@@ -28,87 +22,97 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get session to verify ownership and get transcript
-    const { data: session, error: sessionError } = await supabase
+    const { sessionId } = params;
+
+    // Fetch session
+    const { data: session, error: fetchError } = await supabase
       .from('cs_assessment_sessions')
       .select('*')
       .eq('id', sessionId)
+      .eq('user_id', user.id)
       .single();
 
-    if (sessionError || !session) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
-    }
-
-    // Verify user owns this session
-    if (session.user_id !== user.id) {
+    if (fetchError || !session) {
+      console.error('Error fetching session:', fetchError);
       return NextResponse.json(
-        { error: 'Forbidden - session ownership mismatch' },
-        { status: 403 }
+        { error: 'Session not found or unauthorized' },
+        { status: 404 }
       );
     }
 
-    // Verify transcript exists
-    if (!session.interview_transcript || session.interview_transcript.length === 0) {
-      return NextResponse.json({ error: 'No interview transcript found' }, { status: 400 });
+    if (session.status === 'completed') {
+      // Already completed, just return redirect
+      return NextResponse.json({
+        session_id: sessionId,
+        status: 'completed',
+        redirect_url: `/assessment/results/${sessionId}`,
+      });
     }
 
-    // Score assessment using Claude API
-    const scoringResult = await AssessmentScoringService.scoreAssessment(
-      sessionId,
-      user.id,
-      session.interview_transcript as InterviewMessage[]
-    );
-
-    if (!scoringResult.success || !scoringResult.analysis) {
-      console.error('Scoring failed:', scoringResult.error);
+    // Validate that all required questions are answered
+    const answersCount = Object.keys(session.answers || {}).length;
+    if (answersCount < 20) {
+      // Core questions has 20 questions
       return NextResponse.json(
-        {
-          error: scoringResult.error || 'Failed to score assessment',
-          details: 'Please check that ANTHROPIC_API_KEY is valid in environment variables'
-        },
-        { status: 500 }
+        { error: 'Not all required questions have been answered' },
+        { status: 400 }
       );
     }
 
-    const { analysis } = scoringResult;
+    // Generate scoring using Claude AI
+    console.log(`Starting Claude AI scoring for session ${sessionId}...`);
 
-    // Update session with analysis results
+    const scoringResults = await AssessmentScoringService.scoreAssessment({
+      session_id: sessionId,
+      user_id: user.id,
+      answers: session.answers,
+    });
+
+    console.log(`Scoring complete for session ${sessionId}`);
+
+    // Save results to database
     const { error: updateError } = await supabase
       .from('cs_assessment_sessions')
       .update({
         status: 'completed',
-        archetype: analysis.archetype,
-        archetype_confidence: analysis.archetype_confidence,
-        overall_score: analysis.overall_score,
-        dimensions: analysis.dimensions,
-        tier: analysis.tier,
-        flags: analysis.flags,
-        recommendation: analysis.recommendation,
-        best_fit_roles: analysis.best_fit_roles,
-        analyzed_at: analysis.analyzed_at,
         completed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        analyzed_at: scoringResults.analyzed_at,
+        dimensions: scoringResults.dimensions,
+        overall_score: scoringResults.overall_score,
+        personality_type: scoringResults.personality_profile?.mbti,
+        personality_profile: scoringResults.personality_profile,
+        category_scores: scoringResults.category_scores,
+        ai_orchestration_scores: scoringResults.ai_orchestration_scores,
+        archetype: scoringResults.archetype,
+        archetype_confidence: scoringResults.archetype_confidence,
+        tier: scoringResults.tier,
+        flags: scoringResults.flags,
+        recommendation: scoringResults.recommendation,
+        best_fit_roles: scoringResults.best_fit_roles,
+        badges: scoringResults.badges?.map((b) => b.id) || [],
+        public_summary: scoringResults.public_summary,
+        detailed_summary: scoringResults.detailed_summary,
+        is_published: false,
       })
       .eq('id', sessionId);
 
     if (updateError) {
-      console.error('Error updating session with analysis:', updateError);
-      return NextResponse.json({ error: 'Failed to save analysis' }, { status: 500 });
+      console.error('Error saving scoring results:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to save scoring results' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
-      success: true,
-      message: 'Assessment completed and scored successfully',
       session_id: sessionId,
-      tier: analysis.tier,
-      overall_score: analysis.overall_score,
-      archetype: analysis.archetype,
-      archetype_confidence: analysis.archetype_confidence,
+      status: 'completed',
+      redirect_url: `/assessment/results/${sessionId}`,
     });
-  } catch (error: any) {
-    console.error('Error completing assessment:', error);
+  } catch (error) {
+    console.error('Error in /api/assessment/[sessionId]/complete:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -1,7 +1,9 @@
-// Assessment Types for CS Skills Assessment
+// Assessment Types for CS Skills Assessment - Backend
+// Enhanced with 14 dimensions, personality typing, and badge system
 
 export type QuestionType = 'open_ended' | 'scale' | 'multiple_choice';
 
+// Enhanced with organization and executive_leadership dimensions
 export type ScoringDimension =
   | 'iq'
   | 'eq'
@@ -14,7 +16,9 @@ export type ScoringDimension =
   | 'motivation'
   | 'work_history'
   | 'passions'
-  | 'culture_fit';
+  | 'culture_fit'
+  | 'organization'
+  | 'executive_leadership';
 
 export interface AssessmentQuestion {
   id: string;
@@ -25,6 +29,10 @@ export interface AssessmentQuestion {
   dimensions: ScoringDimension[];
   required: boolean;
   followUp?: string;
+  mbti_dimension?: string; // E/I, S/N, T/F, J/P
+  enneagram_indicator?: string; // stress_response, core_motivation, etc.
+  sub_score?: string; // For AI orchestration sub-scores
+  scoring_guidance?: string;
 }
 
 export interface AssessmentSection {
@@ -51,6 +59,7 @@ export interface InterviewMessage {
   timestamp: string;
 }
 
+// Enhanced with 14 dimensions
 export interface AssessmentDimensions {
   iq: number;
   eq: number;
@@ -64,6 +73,8 @@ export interface AssessmentDimensions {
   work_history: number;
   passions: number;
   culture_fit: number;
+  organization: number;
+  executive_leadership: number;
 }
 
 export interface AssessmentFlags {
@@ -77,9 +88,9 @@ export type ArchetypeConfidence = 'high' | 'medium' | 'low';
 
 // Enhanced Results Types (Phase 1)
 export interface PersonalityProfile {
-  mbti: string;
-  enneagram: string;
-  traits: string[];
+  mbti: string; // e.g., "INTJ"
+  enneagram: string; // e.g., "Type 5"
+  traits: string[]; // e.g., ["Analytical", "Independent", "Strategic"]
 }
 
 export interface AIOrchestrationScores {
@@ -93,15 +104,31 @@ export interface AIOrchestrationScores {
 export interface CategoryScores {
   technical: {
     overall: number;
-    subscores: Record<string, number>;
+    subscores: {
+      technical: number;
+      ai_readiness: number;
+      organization: number;
+      iq: number;
+    };
   };
   emotional: {
     overall: number;
-    subscores: Record<string, number>;
+    subscores: {
+      eq: number;
+      empathy: number;
+      self_awareness: number;
+      executive_leadership: number;
+      gtm: number;
+    };
   };
   creative: {
     overall: number;
-    subscores: Record<string, number>;
+    subscores: {
+      passions: number;
+      culture_fit: number;
+      personality: number;
+      motivation: number;
+    };
   };
 }
 
@@ -131,5 +158,116 @@ export interface AssessmentResults {
   category_scores?: CategoryScores;
   badges?: Badge[];
   public_summary?: string;
+  detailed_summary?: string;
   is_published?: boolean;
+}
+
+// Database types for sessions
+export interface AssessmentSession {
+  id: string;
+  user_id: string;
+  status: 'not_started' | 'in_progress' | 'completed';
+  current_section?: string;
+  current_question?: number;
+  answers: Record<string, AssessmentAnswer>;
+  started_at?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AssessmentAnswer {
+  question_id: string;
+  answer: string;
+  answered_at: string;
+}
+
+// Badge definition for database
+export interface BadgeDefinition {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: 'dimension' | 'category' | 'combo' | 'achievement';
+  criteria: BadgeCriteria;
+  created_at: string;
+}
+
+export interface BadgeCriteria {
+  type: 'single_dimension' | 'multiple_dimensions' | 'category' | 'combo' | 'achievement';
+  conditions: BadgeCondition[];
+  requires_all?: boolean; // AND vs OR logic
+}
+
+export interface BadgeCondition {
+  dimension?: ScoringDimension;
+  category?: 'technical' | 'emotional' | 'creative';
+  min_score?: number;
+  max_score?: number;
+  experience_years?: {
+    min?: number;
+    max?: number;
+  };
+  custom_check?: string; // For complex logic
+}
+
+// Lightning Round (Phase 2 prep)
+export interface LightningRoundSession {
+  id: string;
+  user_id: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'insane';
+  questions_answered: number;
+  correct_answers: number;
+  time_seconds: number;
+  score: number;
+  completed_at?: string;
+  created_at: string;
+}
+
+// API Request/Response types
+export interface StartAssessmentRequest {
+  user_id: string;
+}
+
+export interface StartAssessmentResponse {
+  session_id: string;
+  status: 'not_started' | 'in_progress' | 'completed';
+  progress?: {
+    current_section: string;
+    current_question: number;
+    total_questions: number;
+    percentage: number;
+  };
+  config: AssessmentConfig;
+}
+
+export interface SubmitAnswerRequest {
+  question_id: string;
+  answer: string;
+}
+
+export interface SubmitAnswerResponse {
+  success: boolean;
+  session_id: string;
+  saved_at: string;
+}
+
+export interface CompleteAssessmentResponse {
+  session_id: string;
+  status: 'scoring' | 'completed';
+  redirect_url: string;
+}
+
+export interface AssessmentStatusResponse {
+  status: 'not_started' | 'in_progress' | 'completed';
+  session_id?: string;
+  progress?: {
+    percentage: number;
+    questions_answered: number;
+    total_questions: number;
+  };
+  preview?: {
+    overall_score: number;
+    archetype: string;
+  };
 }
