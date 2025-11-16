@@ -123,8 +123,8 @@ export const cacheKeys = {
  * Mutate helpers for optimistic updates
  */
 export function optimisticUpdate<T>(
-  key: string,
-  updateFn: (data: T) => T
+  _key: string,
+  _updateFn: (data: T) => T
 ): Promise<T | undefined> {
   // This would use SWR's mutate function
   // Import from 'swr' when using: import { mutate } from 'swr'
