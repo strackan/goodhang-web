@@ -54,22 +54,7 @@ export default async function MembersPage() {
             Welcome, {profile?.name || user.email}
           </h1>
 
-          {!profile && (
-            <div className="border-2 border-neon-purple/30 bg-background-lighter p-8 mb-8">
-              <h2 className="text-2xl font-bold font-mono neon-purple mb-4">
-                Complete Your Profile
-              </h2>
-              <p className="text-foreground-dim mb-4 font-mono">
-                You need to complete your profile before accessing member features.
-              </p>
-              <Link
-                href="/onboarding"
-                className="inline-block px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,204,221,0.5)]"
-              >
-                Complete Profile
-              </Link>
-            </div>
-          )}
+          {/* Profile completion banner removed - will be replaced with onboarding tour in future release */}
 
           {profile && (
             <>

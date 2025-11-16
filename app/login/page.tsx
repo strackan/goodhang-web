@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { LinkedInSignInButton } from '@/components/auth/LinkedInSignInButton';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -81,6 +82,23 @@ export default function LoginPage() {
               {message}
             </div>
           )}
+
+          {/* LinkedIn Sign In - Primary Method */}
+          <div className="mb-6">
+            <LinkedInSignInButton redirectTo="/members" variant="primary" fullWidth />
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-neon-purple/20"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-background-lighter text-foreground-dim font-mono">
+                Or use email
+              </span>
+            </div>
+          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
