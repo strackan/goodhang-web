@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, VT323, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import "./hover-glitch.css";
@@ -92,12 +92,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.json",
-  themeColor: "#00ccdd",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
   robots: {
     index: true,
     follow: true,
@@ -113,6 +107,13 @@ export const metadata: Metadata = {
     // google: 'your-google-verification-code',
     // bing: 'your-bing-verification-code',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#00ccdd",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({

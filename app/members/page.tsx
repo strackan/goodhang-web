@@ -102,7 +102,7 @@ export default async function MembersPage() {
               </div>
 
               {/* Quick Links */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Link
                   href="/members/directory"
                   className="border-2 border-neon-cyan/30 hover:border-neon-cyan bg-background-lighter p-6 transition-all duration-300 hover:scale-105"
@@ -126,6 +126,35 @@ export default async function MembersPage() {
                     See what's happening and RSVP
                   </p>
                 </Link>
+
+                <Link
+                  href="/assessment/start"
+                  className="border-2 border-neon-purple/30 hover:border-neon-purple bg-background-lighter p-6 transition-all duration-300 hover:scale-105"
+                >
+                  <h3 className="text-xl font-bold font-mono neon-purple mb-2">
+                    CS Assessment
+                  </h3>
+                  <p className="text-foreground-dim font-mono text-sm">
+                    Join our talent bench and get matched with CS opportunities
+                  </p>
+                </Link>
+
+                {/* Invite Member - Admin/Ambassador Only */}
+                {(profile.user_role === 'admin' || profile.user_role === 'ambassador') && (
+                  <Link
+                    href="/members/invite"
+                    className="border-2 border-green-500/30 hover:border-green-500 bg-background-lighter p-6 transition-all duration-300 hover:scale-105"
+                  >
+                    <h3 className="text-xl font-bold font-mono text-green-400 mb-2">
+                      Invite Member
+                    </h3>
+                    <p className="text-foreground-dim font-mono text-sm">
+                      {profile.user_role === 'admin'
+                        ? 'Create invite codes to onboard new members'
+                        : 'Invite members to your region'}
+                    </p>
+                  </Link>
+                )}
               </div>
             </>
           )}
