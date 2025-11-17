@@ -23,7 +23,7 @@ interface NavigationButtonsProps {
 function NavigationButtonsComponent({
   // canGoNext is not used in the component
   canGoPrevious,
-  _canGoNext,
+  canGoNext,
   isLastQuestion,
   isLoading,
   hasAnswer,
