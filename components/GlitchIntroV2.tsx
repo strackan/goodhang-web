@@ -1,22 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import '../app/glitch-v2.css';
-import {
-  GlitchPhase,
-  getPhaseFromElapsed,
-  corruptCharacter,
-  visitTracking,
-  getGlitchIntensity,
-  GLITCH_TIMING,
-  FLASH_SCHEDULE,
-  BACKGROUND_SCHEDULE
-} from '@/utils/glitchSequence';
-import { getRandomImagePath } from '@/utils/glitchImages';
+import { GlitchPhase, visitTracking } from '@/utils/glitchSequence';
 import { DEFAULT_QUOTE, TRIANGLE_POSITIONS } from '@/lib/constants/glitchIntroConfig';
-import { generateSubliminalMessage } from '@/lib/utils/glitch/glitchMessages';
 import { getPhaseClass as getPhaseClassName, getTextClasses as getTextClassNames } from '@/lib/utils/glitch/glitchClassNames';
+import { useGlitchImages } from '@/lib/hooks/glitch/useGlitchImages';
+import { useGlitchLifecycle } from '@/lib/hooks/glitch/useGlitchLifecycle';
+import { useGlitchAnimation } from '@/lib/hooks/glitch/useGlitchAnimation';
+import { useGlitchControls } from '@/lib/hooks/glitch/useGlitchControls';
 
 interface GlitchIntroProps {
   onComplete: () => void;
@@ -24,281 +16,33 @@ interface GlitchIntroProps {
 }
 
 export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroProps) {
-  const [phase, setPhase] = useState<GlitchPhase>(GlitchPhase.INITIAL);
-  const [_elapsed, setElapsed] = useState(0);
-  const [displayText, setDisplayText] = useState(quote);
-  const [activeFlashes, setActiveFlashes] = useState<Array<{index: number; zone: string; type: string}>>([]);
-  const [activeBackground, setActiveBackground] = useState<{index: number; type: string} | null>(null);
-  const [showWarning, setShowWarning] = useState(true);
-  const [isCompressed, setIsCompressed] = useState(false);
-  const [subliminalMessage, setSubliminalMessage] = useState('');
-  const [showSubliminal, setShowSubliminal] = useState(false);
-  const [flashBackground, setFlashBackground] = useState(false);
-  const [_contentLoaded, setContentLoaded] = useState(false);
-  const isAliveRef = useRef(true); // Track if component is still mounted and active
+  // Hook 1: Lifecycle management
+  const { shouldSkip, isCompressed, contentLoaded, isAliveRef } = useGlitchLifecycle({ onComplete });
 
-  // Pre-assign random images to each flash event (macabre/social overlays)
-  const flashImages = useMemo(() => {
-    try {
-      return FLASH_SCHEDULE.map(flash => ({
-        path: getRandomImagePath(flash.type as 'macabre' | 'social'),
-        type: flash.type
-      }));
-    } catch (error) {
-      console.error('Failed to load flash images:', error);
-      return [];
-    }
-  }, []);
+  // Hook 2: Image preloading
+  const { flashImages, backgroundImages } = useGlitchImages();
 
-  // Pre-assign random background images (TECH only)
-  const backgroundImages = useMemo(() => {
-    try {
-      return BACKGROUND_SCHEDULE.map(bg => ({
-        path: getRandomImagePath('tech'),
-        type: bg.type
-      }));
-    } catch (error) {
-      console.error('Failed to load background images:', error);
-      return [];
-    }
-  }, []);
+  // Hook 3: Animation loop (with memory leak fixes)
+  const {
+    phase,
+    elapsed,
+    displayText,
+    activeFlashes,
+    activeBackground,
+    subliminalMessage,
+    showSubliminal,
+    flashBackground
+  } = useGlitchAnimation({
+    quote: quote || DEFAULT_QUOTE,
+    isCompressed,
+    onComplete
+  });
 
-  // Check if we should skip or compress
-  useEffect(() => {
-    console.log('[GlitchIntroV2] Component mounted');
+  // Hook 4: Skip controls
+  const { handleSkip, showWarning } = useGlitchControls({ onComplete, isAliveRef });
 
-    if (visitTracking.shouldSkipGlitch()) {
-      console.log('[GlitchIntroV2] Skipping glitch intro');
-      // Clear emergency skip flag if it was set
-      visitTracking.clearEmergencySkip();
-      onComplete();
-      return;
-    }
-
-    if (visitTracking.shouldUseCompressed()) {
-      console.log('[GlitchIntroV2] Using compressed animation');
-      setIsCompressed(true);
-    } else {
-      console.log('[GlitchIntroV2] Using full animation');
-    }
-
-    visitTracking.markCurrentSession();
-
-    // Mark content as loaded after a brief delay
-    const loadTimer = setTimeout(() => {
-      console.log('[GlitchIntroV2] Content loaded');
-      setContentLoaded(true);
-      // Clear emergency skip flag since we loaded successfully
-      visitTracking.clearEmergencySkip();
-    }, 100);
-
-    return () => clearTimeout(loadTimer);
-  }, [onComplete]);
-
-  // Emergency refresh if page gets stuck (check if glitch intro hangs)
-  useEffect(() => {
-    if (visitTracking.shouldSkipGlitch()) return;
-
-    console.log('[GlitchIntroV2] Starting emergency timeout monitor (3s)');
-
-    // Check after 3 seconds if content has rendered
-    const emergencyTimeout = setTimeout(() => {
-      if (!isAliveRef.current) {
-        console.log('[GlitchIntroV2] Emergency timeout passed - component already completed');
-        return;
-      }
-
-      // Check if the main content (quote) has actually rendered to the DOM
-      const mainContent = document.querySelector('.glitch-content .glitch-quote');
-
-      if (!mainContent) {
-        // No content rendered = we're hanging
-        console.error('[GlitchIntroV2] Emergency timeout triggered - no content rendered after 3s, forcing refresh');
-        localStorage.setItem('goodhang_glitch_emergency_skip', 'true');
-        window.location.reload();
-      } else {
-        // Content is showing, glitch is playing normally - let it continue for full 15s
-        console.log('[GlitchIntroV2] Content rendered successfully, glitch playing normally');
-      }
-    }, 3000); // 3 second threshold
-
-    return () => {
-      clearTimeout(emergencyTimeout);
-      console.log('[GlitchIntroV2] Emergency timeout monitor cleaned up');
-    };
-  }, []);
-
-  // Prevent body scroll during intro
-  useEffect(() => {
-    if (visitTracking.shouldSkipGlitch()) return;
-
-    // Disable scroll
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      // Re-enable scroll when component unmounts
-      document.body.style.overflow = '';
-    };
-  }, []);
-
-  // Main animation loop
-  useEffect(() => {
-    if (visitTracking.shouldSkipGlitch()) return;
-
-    const maxTime = isCompressed ? GLITCH_TIMING.COMPRESSED : GLITCH_TIMING.TOTAL;
-    let animationFrame: number;
-    const startTime = Date.now();
-    let lastUpdateTime = Date.now();
-
-    // Failsafe timeout - force complete after max time + buffer
-    const failsafeTimeout = setTimeout(() => {
-      console.warn('Glitch animation failsafe triggered');
-      isAliveRef.current = false;
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-      visitTracking.markGlitchSeen();
-      document.body.style.overflow = '';
-      onComplete();
-    }, maxTime + 1000); // 1 second buffer
-
-    // Watchdog timer - detect if animation loop stops running
-    const watchdogInterval = setInterval(() => {
-      const timeSinceLastUpdate = Date.now() - lastUpdateTime;
-      if (timeSinceLastUpdate > 2000) {
-        console.error('Animation loop appears stuck - forcing completion');
-        isAliveRef.current = false;
-        clearInterval(watchdogInterval);
-        clearTimeout(failsafeTimeout);
-        if (animationFrame) {
-          cancelAnimationFrame(animationFrame);
-        }
-        visitTracking.markGlitchSeen();
-        document.body.style.overflow = '';
-        onComplete();
-      }
-    }, 1000);
-
-    const animate = () => {
-      const now = Date.now();
-      const newElapsed = now - startTime;
-      lastUpdateTime = now; // Update watchdog
-
-      if (newElapsed >= maxTime) {
-        console.log('[GlitchIntroV2] Animation complete naturally');
-        isAliveRef.current = false; // Mark as complete
-        clearTimeout(failsafeTimeout);
-        clearInterval(watchdogInterval);
-        visitTracking.markGlitchSeen();
-        document.body.style.overflow = ''; // Re-enable scroll
-        onComplete();
-        return;
-      }
-
-      setElapsed(newElapsed);
-
-      // Update phase
-      const newPhase = getPhaseFromElapsed(newElapsed);
-      setPhase(newPhase);
-
-      // Check for active background image
-      if (!isCompressed) {
-        const activeBg = BACKGROUND_SCHEDULE.find((bg, _index) => {
-          return newElapsed >= bg.time && newElapsed < bg.time + bg.duration;
-        });
-
-        if (activeBg) {
-          setActiveBackground({
-            index: BACKGROUND_SCHEDULE.indexOf(activeBg),
-            type: activeBg.type
-          });
-        } else {
-          setActiveBackground(null);
-        }
-
-        // Check for active overlay flashes
-        const active = FLASH_SCHEDULE.filter((flash, _index) => {
-          return newElapsed >= flash.time && newElapsed < flash.time + flash.duration;
-        }).map((flash, _index) => ({
-          index: FLASH_SCHEDULE.indexOf(flash),
-          zone: flash.zone || 'top-left',
-          type: flash.type
-        }));
-
-        setActiveFlashes(active);
-      }
-
-      // Corrupt text occasionally (not constantly)
-      const intensity = getGlitchIntensity(newPhase);
-      if (intensity > 0 && Math.random() < 0.15) {  // Reduced frequency
-        setDisplayText(corruptCharacter(quote, intensity));
-      } else if (Math.random() < 0.05) {
-        setDisplayText(quote);  // Restore text occasionally
-      }
-
-      // Subliminal messages during CHAOS phase
-      if (newPhase === GlitchPhase.CHAOS) {
-        if (Math.random() > 0.92) {  // 8% chance per frame
-          const randomMsg = generateSubliminalMessage();
-          setSubliminalMessage(randomMsg);
-          setShowSubliminal(true);
-          setTimeout(() => setShowSubliminal(false), 100);  // 100ms flash
-        }
-
-        // Random background flashes
-        if (Math.random() > 0.95) {  // 5% chance per frame
-          setFlashBackground(true);
-          setTimeout(() => setFlashBackground(false), 80);
-        }
-      }
-
-      animationFrame = requestAnimationFrame(animate);
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-
-    return () => {
-      clearTimeout(failsafeTimeout);
-      clearInterval(watchdogInterval);
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
-  }, [onComplete, quote, isCompressed]);
-
-  // Skip handler
-  const handleSkip = useCallback(() => {
-    console.log('[GlitchIntroV2] Skip button clicked');
-    isAliveRef.current = false; // Mark as complete
-    visitTracking.markGlitchSeen();
-    document.body.style.overflow = ''; // Re-enable scroll
-    onComplete();
-  }, [onComplete]);
-
-  // ESC key handler
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleSkip();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSkip]);
-
-  // Fade in skip button after 3 seconds
-  useEffect(() => {
-    const fadeInTimer = setTimeout(() => {
-      setShowWarning(true);
-    }, 3000);
-
-    return () => {
-      clearTimeout(fadeInTimer);
-    };
-  }, []);
-
-  if (visitTracking.shouldSkipGlitch()) {
+  // Early return if we should skip
+  if (shouldSkip || visitTracking.shouldSkipGlitch()) {
     return null;
   }
 
