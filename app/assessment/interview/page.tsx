@@ -26,9 +26,7 @@ export default function AssessmentInterviewPage() {
     currentSectionIndex,
     assessment,
     progress,
-    isFirstQuestion,
     isLastQuestion,
-    canGoNext,
     canGoPrevious,
     answers,
     sessionId,
@@ -42,7 +40,6 @@ export default function AssessmentInterviewPage() {
 
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
-  const [currentSectionIndexState, setCurrentSectionIndexState] = useState(0);
 
   const loadingMessages = [
     "Analyzing your responses...",
@@ -51,9 +48,9 @@ export default function AssessmentInterviewPage() {
     "Preparing your results...",
   ];
 
-  const handleNavigateToSection = (sectionIndex: number) => {
-    setCurrentSectionIndexState(sectionIndex);
+  const handleNavigateToSection = (_sectionIndex: number) => {
     // The actual navigation is handled by the useAssessment hook
+    // TODO: Implement section navigation
   };
 
   // Auto-start assessment if not started
@@ -91,6 +88,7 @@ export default function AssessmentInterviewPage() {
 
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [status, loadingMessages.length]);
 
   const handleSubmitAnswer = async () => {
@@ -277,7 +275,7 @@ export default function AssessmentInterviewPage() {
                 disabled={isLoading}
                 className="px-12 py-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/50 text-lg"
               >
-                {status === 'completing' ? 'Analyzing Your Responses...' : 'Submit & See Results'}
+                {isLoading ? 'Analyzing Your Responses...' : 'Submit & See Results'}
               </button>
             </div>
           )}
