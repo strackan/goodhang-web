@@ -225,17 +225,122 @@ export interface BadgeCondition {
   custom_check?: string; // For complex logic
 }
 
-// Lightning Round (Phase 2 prep)
+
+// Lightning Round Types (Phase 2)
+export type LightningDifficulty = 'easy' | 'intermediate' | 'advanced' | 'insane';
+export type LightningQuestionType = 'general_knowledge' | 'brain_teaser' | 'math' | 'nursery_rhyme';
+
+export interface LightningRoundQuestion {
+  id: string;
+  question: string;
+  correct_answer: string;
+  explanation?: string;
+  question_type: LightningQuestionType;
+  difficulty: LightningDifficulty;
+}
+
+export interface LightningRoundAnswer {
+  question_id: string;
+  answer: string;
+  time_taken_ms: number;
+}
+
+// Lightning Round API Request/Response Types
+export interface StartLightningRoundRequest {
+  session_id: string;
+  difficulty?: LightningDifficulty;
+}
+
+export interface StartLightningRoundResponse {
+  questions: LightningRoundQuestion[];
+  duration_seconds: number;
+  started_at: string;
+}
+
+export interface SubmitLightningRoundRequest {
+  session_id: string;
+  answers: LightningRoundAnswer[];
+}
+
+export interface SubmitLightningRoundResponse {
+  score: number;
+  accuracy: number;
+  percentile: number;
+  difficulty_achieved: LightningDifficulty;
+  correct_count: number;
+  total_questions: number;
+  questions_answered: number;
+  time_bonus: number;
+}
+
+// Lightning Round Session
 export interface LightningRoundSession {
   id: string;
   user_id: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'insane';
+  difficulty: LightningDifficulty;
   questions_answered: number;
   correct_answers: number;
   time_seconds: number;
   score: number;
   completed_at?: string;
   created_at: string;
+}
+
+// Public Profile Types (Phase 2 - Job Board)
+export interface PublicProfile {
+  user_id: string;
+  session_id: string | null;
+  profile_slug: string;
+  name: string;
+  email?: string;
+  career_level: string;
+  years_experience: number;
+  self_description?: string;
+  personality_type?: string;
+  archetype?: string;
+  badges?: string[];
+  best_fit_roles?: string[];
+  public_summary?: string;
+  video_url?: string;
+  show_scores: boolean;
+  overall_score?: number;
+  category_scores?: CategoryScores;
+  published_at: string;
+  updated_at: string;
+}
+
+export interface PublishProfileRequest {
+  session_id: string;
+  show_scores?: boolean;
+  show_email?: boolean;
+  video_url?: string;
+}
+
+export interface PublishProfileResponse {
+  success: boolean;
+  slug: string;
+  url: string;
+  message: string;
+}
+
+export interface BrowseProfilesRequest {
+  career_level?: string;
+  badges?: string[];
+  archetype?: string;
+  search?: string;
+  sort?: 'published_at' | 'overall_score' | 'name';
+  order?: 'asc' | 'desc';
+  limit?: number;
+  offset?: number;
+}
+
+export interface BrowseProfilesResponse {
+  profiles: PublicProfile[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+  total_pages: number;
 }
 
 // API Request/Response types
