@@ -9,6 +9,10 @@ import { useGlitchImages } from '@/lib/hooks/glitch/useGlitchImages';
 import { useGlitchLifecycle } from '@/lib/hooks/glitch/useGlitchLifecycle';
 import { useGlitchAnimation } from '@/lib/hooks/glitch/useGlitchAnimation';
 import { useGlitchControls } from '@/lib/hooks/glitch/useGlitchControls';
+import { GlitchBackgroundImage } from './glitch-intro/GlitchBackgroundImage';
+import { GlitchBackgroundEffects } from './glitch-intro/GlitchBackgroundEffects';
+import { GlitchTriangles } from './glitch-intro/GlitchTriangles';
+import { GlitchSkipButton } from './glitch-intro/GlitchSkipButton';
 
 interface GlitchIntroProps {
   onComplete: () => void;
@@ -54,74 +58,29 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
   return (
     <div className={`glitch-intro-container ${getPhaseClassName(phase)}`} style={containerStyle}>
-      {/* Full-screen background image oscillation */}
-      {activeBackground && backgroundImages[activeBackground.index] && (
-        <div className="glitch-background-image">
-          <Image
-            src={backgroundImages[activeBackground.index]?.path || ''}
-            alt=""
-            fill
-            sizes="100vw"
-            style={{
-              objectFit: 'cover',
-              opacity: 0.3,
-              filter: 'blur(1px) contrast(1.2) saturate(0.8)',
-            }}
-            className="background-pulse"
-            priority={false}
-            unoptimized
-          />
-        </div>
-      )}
+      {/* Component 1: Full-screen background image oscillation */}
+      <GlitchBackgroundImage
+        activeBackground={activeBackground}
+        backgroundImages={backgroundImages}
+      />
 
-      {/* Film Grain - Always visible */}
-      <div className="film-grain" />
+      {/* Component 2: Background effects (film grain, CRT, VHS, heat distortion, edge corruption) */}
+      <GlitchBackgroundEffects
+        showBackgroundEffects={showBackgroundEffects}
+        showEdgeCorruption={showEdgeCorruption}
+      />
 
-      {/* CRT Effects */}
-      <div className="crt-bulge" />
-      {showBackgroundEffects && <div className="crt-scanlines" />}
+      {/* Component 3: Triangle Chaos - Background geometric patterns */}
+      <GlitchTriangles
+        show={showTriangles}
+        positions={TRIANGLE_POSITIONS}
+      />
 
-      {/* VHS Tape Artifacts */}
-      {showBackgroundEffects && (
-        <>
-          <div className="vhs-tape-wrinkle" style={{ animationDelay: '0s' }} />
-          <div className="vhs-tape-wrinkle" style={{ animationDelay: '2s' }} />
-          <div className="vhs-tape-wrinkle" style={{ animationDelay: '4s' }} />
-        </>
-      )}
-
-      {/* Heat Distortion */}
-      {showBackgroundEffects && <div className="heat-distortion" />}
-
-      {/* Edge Corruption - Creeping from sides */}
-      {showEdgeCorruption && (
-        <>
-          <div className="edge-corruption top" />
-          <div className="edge-corruption bottom" />
-          <div className="edge-corruption left" />
-          <div className="edge-corruption right" />
-        </>
-      )}
-
-      {/* Triangle Chaos - Background geometric patterns */}
-      {showTriangles && TRIANGLE_POSITIONS.map((pos, i) => (
-        <div
-          key={i}
-          className="triangle-chaos"
-          style={{
-            ...pos,
-            animationDelay: `${pos.delay}s`,
-            position: 'absolute'
-          }}
-        />
-      ))}
-
-      {/* Skip button - fades in after 3 seconds in upper right */}
-      {showWarning && (
-        <button onClick={handleSkip} className="glitch-skip-btn-fade">
-          Skip
-        </button>
-      )}
+      {/* Component 4: Skip button - fades in after 3 seconds in upper right */}
+      <GlitchSkipButton
+        show={showWarning}
+        onClick={handleSkip}
+      />
 
       {/* Subliminal Message Flash */}
       {showSubliminal && (
