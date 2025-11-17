@@ -14,65 +14,18 @@ import {
   BACKGROUND_SCHEDULE
 } from '@/utils/glitchSequence';
 import { getRandomImagePath } from '@/utils/glitchImages';
+import { DEFAULT_QUOTE, TRIANGLE_POSITIONS } from '@/lib/constants/glitchIntroConfig';
+import { generateSubliminalMessage } from '@/lib/utils/glitch/glitchMessages';
+import { getPhaseClass as getPhaseClassName, getTextClasses as getTextClassNames } from '@/lib/utils/glitch/glitchClassNames';
 
 interface GlitchIntroProps {
   onComplete: () => void;
   quote?: string;
 }
 
-const DEFAULT_QUOTE = "Fully alive, well connected, and supported human beings are unstoppable.";
-
-// Triangle positions for chaos effect
-const TRIANGLE_POSITIONS = [
-  { top: '10%', left: '5%', delay: 0 },
-  { top: '15%', right: '8%', delay: 0.5 },
-  { bottom: '12%', left: '10%', delay: 1 },
-  { bottom: '18%', right: '6%', delay: 1.5 },
-  { top: '40%', left: '2%', delay: 2 },
-  { top: '60%', right: '4%', delay: 2.5 },
-];
-
-// Seed words for subliminal messages
-const SEED_WORDS = [
-  "THEY'RE", "WATCHING", "SIGNAL", "INTERCEPTED", "CONNECTION",
-  "ESTABLISHED", "GOOD_HANG", "INITIATED", "ARE", "YOU", "ALONE",
-  "FULLY", "ALIVE", "WELL", "CONNECTED", "UNSTOPP4BL3", "BELONG",
-  "JOIN", "US", "HERE", "FOREVER", "CANNOT", "LEAVE", "WELCOME"
-];
-
-const RANDOM_WORDS = [
-  "THRESHOLD", "MEMBRANE", "FREQUENCY", "RESONANCE", "VESSEL",
-  "CATALYST", "APERTURE", "CONDUIT", "NEXUS", "CIPHER",
-  "ANOMALY", "SUBSTRATE", "PROTOCOL", "SEQUENCE", "LATTICE",
-  "TRANSMISSION", "EMERGENCE", "CONVERGENCE", "SYMBIOSIS"
-];
-
-// Generate random subliminal message
-function generateSubliminalMessage(): string {
-  const useSeed = Math.random() > 0.3; // 70% chance to use seed word
-
-  if (useSeed) {
-    const numWords = Math.random() > 0.5 ? 2 : 3;
-    const words = [];
-
-    for (let i = 0; i < numWords; i++) {
-      if (Math.random() > 0.4) {
-        words.push(SEED_WORDS[Math.floor(Math.random() * SEED_WORDS.length)]);
-      } else {
-        words.push(RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)]);
-      }
-    }
-
-    return words.join(' ');
-  } else {
-    // Pure random
-    return RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
-  }
-}
-
 export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroProps) {
   const [phase, setPhase] = useState<GlitchPhase>(GlitchPhase.INITIAL);
-  const [elapsed, setElapsed] = useState(0);
+  const [_elapsed, setElapsed] = useState(0);
   const [displayText, setDisplayText] = useState(quote);
   const [activeFlashes, setActiveFlashes] = useState<Array<{index: number; zone: string; type: string}>>([]);
   const [activeBackground, setActiveBackground] = useState<{index: number; type: string} | null>(null);
@@ -81,7 +34,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   const [subliminalMessage, setSubliminalMessage] = useState('');
   const [showSubliminal, setShowSubliminal] = useState(false);
   const [flashBackground, setFlashBackground] = useState(false);
-  const [contentLoaded, setContentLoaded] = useState(false);
+  const [_contentLoaded, setContentLoaded] = useState(false);
   const isAliveRef = useRef(true); // Track if component is still mounted and active
 
   // Pre-assign random images to each flash event (macabre/social overlays)
@@ -250,7 +203,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
       // Check for active background image
       if (!isCompressed) {
-        const activeBg = BACKGROUND_SCHEDULE.find((bg, index) => {
+        const activeBg = BACKGROUND_SCHEDULE.find((bg, _index) => {
           return newElapsed >= bg.time && newElapsed < bg.time + bg.duration;
         });
 
@@ -264,9 +217,9 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
         }
 
         // Check for active overlay flashes
-        const active = FLASH_SCHEDULE.filter((flash, index) => {
+        const active = FLASH_SCHEDULE.filter((flash, _index) => {
           return newElapsed >= flash.time && newElapsed < flash.time + flash.duration;
-        }).map((flash, index) => ({
+        }).map((flash, _index) => ({
           index: FLASH_SCHEDULE.indexOf(flash),
           zone: flash.zone || 'top-left',
           type: flash.type
@@ -345,39 +298,6 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
     };
   }, []);
 
-  // Get phase class name
-  const getPhaseClass = () => {
-    switch (phase) {
-      case GlitchPhase.INITIAL:
-        return 'phase-initial';
-      case GlitchPhase.SOMETHING_WRONG:
-        return 'phase-something-wrong';
-      case GlitchPhase.CORRUPTION:
-        return 'phase-corruption';
-      case GlitchPhase.CHAOS:
-        return 'phase-chaos';
-      case GlitchPhase.RESOLUTION:
-        return 'phase-resolution';
-      default:
-        return '';
-    }
-  };
-
-  // Get text classes
-  const getTextClasses = () => {
-    const classes = ['glitch-quote'];
-
-    if (phase === GlitchPhase.CORRUPTION || phase === GlitchPhase.CHAOS) {
-      classes.push('slow-rgb-drift');  // Slow, not rapid
-    }
-
-    if (phase === GlitchPhase.CHAOS) {
-      classes.push('occasional-fragment');
-    }
-
-    return classes.join(' ');
-  };
-
   if (visitTracking.shouldSkipGlitch()) {
     return null;
   }
@@ -389,12 +309,12 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   const containerStyle = flashBackground ? { background: Math.random() > 0.5 ? '#ffffff' : '#000000' } : {};
 
   return (
-    <div className={`glitch-intro-container ${getPhaseClass()}`} style={containerStyle}>
+    <div className={`glitch-intro-container ${getPhaseClassName(phase)}`} style={containerStyle}>
       {/* Full-screen background image oscillation */}
       {activeBackground && backgroundImages[activeBackground.index] && (
         <div className="glitch-background-image">
           <Image
-            src={backgroundImages[activeBackground.index].path}
+            src={backgroundImages[activeBackground.index]?.path || ''}
             alt=""
             fill
             sizes="100vw"
@@ -468,7 +388,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
 
       {/* Main content */}
       <div className={`glitch-content ${phase === GlitchPhase.CORRUPTION ? 'color-channel-shift' : ''}`}>
-        <blockquote className={getTextClasses()}>
+        <blockquote className={getTextClassNames(phase)}>
           {displayText}
         </blockquote>
         {phase === GlitchPhase.INITIAL && (
