@@ -13,9 +13,15 @@ export async function POST(request: Request) {
     }
 
     // Extract answers from Typeform response
-    const answers = formResponse.answers;
+    const answers = formResponse.answers as Array<{
+      field: { ref: string };
+      text?: string;
+      email?: string;
+      url?: string;
+      choice?: { label: string };
+    }>;
     const findAnswer = (ref: string) => {
-      const answer = answers.find((a: any) => a.field.ref === ref);
+      const answer = answers.find((a) => a.field.ref === ref);
       return answer?.text || answer?.email || answer?.url || answer?.choice?.label || '';
     };
 

@@ -171,14 +171,14 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
 
     try {
       recognitionRef.current.start();
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Already started error - ignore
-      if (err.message.includes('already started')) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start speech recognition';
+      if (errorMessage.includes('already started')) {
         return;
       }
-      const errorMsg = err.message || 'Failed to start speech recognition';
-      setError(errorMsg);
-      onError?.(errorMsg);
+      setError(errorMessage);
+      onError?.(errorMessage);
     }
   }, [onError]);
 
@@ -187,7 +187,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
 
     try {
       recognitionRef.current.stop();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn('Error stopping recognition:', err);
     }
   }, []);

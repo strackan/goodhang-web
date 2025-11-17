@@ -3,9 +3,9 @@ import type { Event } from '@/lib/types/database';
 
 interface EventCardProps {
   event: Event & {
-    rsvps?: any[];
+    rsvps?: Array<{ plus_ones?: number }>;
   };
-  userRsvp?: any;
+  userRsvp?: { user_id?: string; guest_email?: string };
   isPast?: boolean;
 }
 

@@ -124,8 +124,8 @@ export default function InvitePage() {
       if (userRole !== 'ambassador') {
         setSelectedRegion('');
       }
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to create invite';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create invite';
 
       // Check for duplicate email error
       if (errorMessage.includes('duplicate') || errorMessage.includes('unique')) {

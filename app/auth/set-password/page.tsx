@@ -127,8 +127,9 @@ export default function SetPasswordPage() {
       // Success! Redirect to assessment interview
       // The interview page will handle starting the assessment
       router.push('/assessment/interview');
-    } catch (err: any) {
-      setError(err.message || 'Failed to set password');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to set password';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

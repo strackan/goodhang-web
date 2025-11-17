@@ -86,10 +86,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, emailId: data?.id });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Email sending error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500 }
     );
   }

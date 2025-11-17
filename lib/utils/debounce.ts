@@ -5,7 +5,7 @@
  * wait milliseconds have elapsed since the last time it was invoked.
  */
 
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: never[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -27,7 +27,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * Debounce with promise support
  * Returns a promise that resolves when the debounced function executes
  */
-export function debouncePromise<T extends (...args: any[]) => Promise<any>>(
+export function debouncePromise<T extends (...args: never[]) => Promise<unknown>>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => Promise<ReturnType<T>> {

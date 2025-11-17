@@ -39,8 +39,9 @@ export default function IndividualProfilePage() {
 
         const data = await response.json();
         setProfile(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load profile');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load profile';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }

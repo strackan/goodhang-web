@@ -99,8 +99,9 @@ export default function PendingInvitesPage() {
 
       // Remove from local state
       setInvites(invites.filter(inv => inv.id !== inviteId));
-    } catch (err: any) {
-      alert('Failed to revoke invite: ' + err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      alert('Failed to revoke invite: ' + errorMessage);
     }
   };
 

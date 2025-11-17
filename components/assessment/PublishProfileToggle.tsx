@@ -26,7 +26,7 @@ interface PublishProfileToggleProps {
     best_fit_roles?: string[] | undefined;
     public_summary?: string | undefined;
     overall_score?: number | undefined;
-    category_scores?: any;
+    category_scores?: Record<string, number>;
   };
   onPublishChange?: (published: boolean, slug?: string) => void;
 }
@@ -84,8 +84,9 @@ export function PublishProfileToggle({
       setProfileUrl(data.url);
       setShowModal(false);
       onPublishChange?.(true, data.slug);
-    } catch (err: any) {
-      setError(err.message || 'Failed to publish profile');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to publish profile';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -114,8 +115,9 @@ export function PublishProfileToggle({
       setIsPublished(false);
       setProfileUrl(null);
       onPublishChange?.(false);
-    } catch (err: any) {
-      setError(err.message || 'Failed to unpublish profile');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to unpublish profile';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

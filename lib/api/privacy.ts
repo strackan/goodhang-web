@@ -7,7 +7,7 @@ import type { PublicProfile } from '@/lib/assessment/types';
  * - Hide scores if show_scores is false
  * - Remove email if not present
  */
-export function sanitizePublicProfile(profile: any): PublicProfile {
+export function sanitizePublicProfile(profile: Record<string, unknown>): PublicProfile {
   const sanitized: PublicProfile = {
     user_id: profile.user_id,
     session_id: profile.session_id,
@@ -65,7 +65,7 @@ export function sanitizePublicProfile(profile: any): PublicProfile {
 /**
  * Sanitize an array of public profiles
  */
-export function sanitizePublicProfiles(profiles: any[]): PublicProfile[] {
+export function sanitizePublicProfiles(profiles: Array<Record<string, unknown>>): PublicProfile[] {
   return profiles.map(sanitizePublicProfile);
 }
 
@@ -73,7 +73,7 @@ export function sanitizePublicProfiles(profiles: any[]): PublicProfile[] {
  * Validate that a profile is ready to be published
  * Returns an array of validation errors, empty if valid
  */
-export function validateProfileForPublishing(session: any, profile: any): string[] {
+export function validateProfileForPublishing(session: Record<string, unknown>, profile: Record<string, unknown>): string[] {
   const errors: string[] = [];
 
   // Check assessment completion
@@ -109,7 +109,7 @@ export function validateProfileForPublishing(session: any, profile: any): string
 /**
  * Check if a user can publish their profile
  */
-export function canPublishProfile(session: any, profile: any): boolean {
+export function canPublishProfile(session: Record<string, unknown>, profile: Record<string, unknown>): boolean {
   return validateProfileForPublishing(session, profile).length === 0;
 }
 

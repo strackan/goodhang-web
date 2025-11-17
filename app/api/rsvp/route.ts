@@ -52,16 +52,18 @@ export async function POST(request: NextRequest) {
     console.log('RSVP inserted successfully:', rsvpData);
     return NextResponse.json({ success: true, data: rsvpData });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('=== RSVP API Error ===');
     console.error('Error:', error);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('Error message:', errorMessage);
+    console.error('Error stack:', errorStack);
 
     return NextResponse.json(
       {
-        error: error.message || 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? errorStack : undefined
       },
       { status: 500 }
     );

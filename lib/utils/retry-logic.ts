@@ -168,7 +168,7 @@ export async function saveAnswerWithRetry(
 export class OfflineQueue {
   private queue: Array<{
     id: string;
-    operation: () => Promise<any>;
+    operation: () => Promise<unknown>;
     retries: number;
   }> = [];
   private isProcessing = false;
@@ -184,7 +184,7 @@ export class OfflineQueue {
   /**
    * Add operation to queue
    */
-  add(id: string, operation: () => Promise<any>): void {
+  add(id: string, operation: () => Promise<unknown>): void {
     this.queue.push({ id, operation, retries: 0 });
     this.saveToStorage();
   }

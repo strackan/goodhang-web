@@ -3,7 +3,7 @@
 
 import { SCORING_RUBRICS } from '../assessment/scoring-rubrics';
 
-export function buildScoringPrompt(transcript: any[]): string {
+export function buildScoringPrompt(transcript: Array<{ role: string; content: string }>): string {
   // Convert transcript to readable format
   const transcriptText = transcript
     .map((msg) => {
@@ -213,7 +213,7 @@ ${range.indicators.map((i) => `- ${i}`).join('\n')}
 }
 
 // Parse AI response into structured format
-export function parseAssessmentResponse(response: string): any {
+export function parseAssessmentResponse(response: string): Record<string, unknown> {
   try {
     // Extract JSON from response (may have markdown code blocks)
     const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/) || response.match(/{[\s\S]*}/);

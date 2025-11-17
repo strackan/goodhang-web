@@ -94,7 +94,7 @@ export class AssessmentScoringService {
    * Generates comprehensive scoring using Claude AI
    */
   private static async generateClaudeScoring(
-    answers: Record<string, any>
+    answers: Record<string, { question_id: string; answer: string; answered_at: string }>
   ): Promise<ClaudeScoringResponse> {
     const prompt = this.buildScoringPrompt(answers);
 
@@ -132,7 +132,7 @@ export class AssessmentScoringService {
   /**
    * Builds the scoring prompt with all answers
    */
-  private static buildScoringPrompt(answers: Record<string, any>): string {
+  private static buildScoringPrompt(answers: Record<string, { answer: string }>): string {
     const formattedAnswers = Object.entries(answers)
       .map(([questionId, data]) => {
         return `Question ID: ${questionId}\nAnswer: ${data.answer}\n`;

@@ -47,8 +47,9 @@ export function ApplicationReviewForm({
 
       router.refresh();
       alert('Notes saved successfully');
-    } catch (err: any) {
-      setError(err.message || 'Failed to save notes');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save notes';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -103,8 +104,9 @@ export function ApplicationReviewForm({
 
       alert('Application approved! User now has active membership.');
       router.push('/admin');
-    } catch (err: any) {
-      setError(err.message || 'Failed to approve application');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to approve application';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -140,8 +142,9 @@ export function ApplicationReviewForm({
 
       alert('Application rejected.');
       router.push('/admin');
-    } catch (err: any) {
-      setError(err.message || 'Failed to reject application');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to reject application';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

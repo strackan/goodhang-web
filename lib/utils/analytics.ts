@@ -43,9 +43,9 @@ declare global {
     gtag?: (
       command: string,
       eventName: string | Date,
-      params?: Record<string, any>
+      params?: Record<string, unknown>
     ) => void;
-    dataLayer?: any[];
+    dataLayer?: Array<Record<string, unknown>>;
   }
 }
 

@@ -25,12 +25,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const { data: { user } } = await supabase.auth.getUser();
 
   // Check if user has already RSVPed
-  const userRsvp = event.rsvps?.find((rsvp: any) =>
+  const userRsvp = event.rsvps?.find((rsvp: { user_id?: string; guest_email?: string }) =>
     rsvp.user_id === user?.id || rsvp.guest_email === user?.email
   );
 
   // Calculate total attendees
-  const totalAttendees = event.rsvps?.reduce((acc: number, rsvp: any) =>
+  const totalAttendees = event.rsvps?.reduce((acc: number, rsvp: { plus_ones?: number }) =>
     acc + 1 + (rsvp.plus_ones || 0), 0
   ) || 0;
 

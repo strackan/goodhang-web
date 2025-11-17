@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     let userId: string;
-    let authSession: any = null;
+    let authSession: { access_token: string; refresh_token: string } | null = null;
 
     {
       // Create auth user - email confirmation required for security
@@ -129,10 +129,11 @@ export async function POST(request: NextRequest) {
       session: authSession, // Include session if auto-confirmed
       message: 'Account created successfully',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Signup error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500 }
     );
   }

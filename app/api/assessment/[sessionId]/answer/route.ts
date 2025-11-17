@@ -73,7 +73,12 @@ export async function POST(
     };
 
     // Build update object
-    const updateData: any = {
+    const updateData: {
+      answers: Record<string, { question_id: string; answer: string; answered_at: string }>;
+      status: string;
+      current_section?: string;
+      current_question?: number;
+    } = {
       answers: updatedAnswers,
       status: 'in_progress',
     };

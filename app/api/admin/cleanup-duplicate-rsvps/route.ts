@@ -74,10 +74,11 @@ export async function POST(_request: NextRequest) {
       deletedIds: duplicateIds
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

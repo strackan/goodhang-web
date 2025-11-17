@@ -64,10 +64,11 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Magic link sent to your email',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Send magic link error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500 }
     );
   }

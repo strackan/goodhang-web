@@ -46,8 +46,9 @@ export async function GET(_request: NextRequest) {
     }
 
     // Calculate total questions
-    const totalQuestions = (coreQuestions as any).sections.reduce(
-      (sum: number, section: any) => sum + section.questions.length,
+    const sections = coreQuestions.sections as Array<{ questions: unknown[] }>;
+    const totalQuestions = sections.reduce(
+      (sum: number, section: { questions: unknown[] }) => sum + section.questions.length,
       0
     );
 

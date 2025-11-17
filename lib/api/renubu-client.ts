@@ -268,7 +268,7 @@ export interface SignupResponse {
     email: string;
     name: string;
   };
-  session?: any; // Supabase session if auto-confirmed
+  session?: { access_token: string; refresh_token: string } | null; // Supabase session if auto-confirmed
   message: string;
 }
 

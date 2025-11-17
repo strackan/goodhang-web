@@ -133,7 +133,7 @@ export class BadgeEvaluatorService {
    * Extract experience years from answers
    * Looks for prof-1 question which asks about years of experience
    */
-  static extractExperienceYears(answers: Record<string, any>): number | undefined {
+  static extractExperienceYears(answers: Record<string, { answer: string }>): number | undefined {
     const profAnswer = answers['prof-1'];
     if (!profAnswer?.answer) return undefined;
 

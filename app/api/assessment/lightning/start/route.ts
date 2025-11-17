@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
  * If no difficulty specified, fetch a mix of all difficulties
  */
 async function fetchRandomQuestions(
-  supabase: any,
+  supabase: Awaited<ReturnType<typeof createClient>>,
   difficulty?: LightningDifficulty
 ): Promise<LightningRoundQuestion[]> {
   try {

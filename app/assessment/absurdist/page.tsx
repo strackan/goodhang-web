@@ -138,9 +138,10 @@ export default function AbsurdistQuestionsPage() {
 
       // Redirect to results page
       router.push(data.redirect_url);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error submitting absurdist answers:', err);
-      setError(err.message || 'Failed to submit answers');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit answers';
+      setError(errorMessage);
       setIsSubmitting(false);
     }
   };

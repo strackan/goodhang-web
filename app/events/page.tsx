@@ -98,7 +98,7 @@ export default async function EventsPage() {
                   <EventCard
                     key={event.id}
                     event={event}
-                    userRsvp={event.rsvps?.find((rsvp: any) =>
+                    userRsvp={event.rsvps?.find((rsvp: { user_id?: string; guest_email?: string }) =>
                       rsvp.user_id === user?.id || rsvp.guest_email === user?.email
                     )}
                   />

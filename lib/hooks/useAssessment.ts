@@ -123,9 +123,10 @@ export function useAssessment(): UseAssessmentReturn {
       if (!data.resume) {
         setAnswers([]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start assessment';
       setStatus('error');
-      setError(err.message || 'Failed to start assessment');
+      setError(errorMessage);
       throw err;
     }
   }, []);
@@ -173,9 +174,10 @@ export function useAssessment(): UseAssessmentReturn {
         });
 
         setStatus('in_progress');
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to submit answer';
         setStatus('error');
-        setError(err.message || 'Failed to submit answer');
+        setError(errorMessage);
         throw err;
       }
     },
@@ -251,9 +253,10 @@ export function useAssessment(): UseAssessmentReturn {
 
       // TODO: Send email notifications (implement later if needed)
       // For now, just complete the assessment
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to complete assessment';
       setStatus('error');
-      setError(err.message || 'Failed to complete assessment');
+      setError(errorMessage);
       throw err;
     }
   }, [sessionId]);
@@ -276,9 +279,10 @@ export function useAssessment(): UseAssessmentReturn {
       setSessionId(sessionId);
       setResults(results);
       setStatus('completed');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load results';
       setStatus('error');
-      setError(err.message || 'Failed to load results');
+      setError(errorMessage);
       throw err;
     }
   }, []);
