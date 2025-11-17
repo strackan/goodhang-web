@@ -1,7 +1,7 @@
 // Badge Definitions for CS Assessment
 // These match the database seed data in the migration
 
-import { BadgeDefinition, BadgeCriteria } from './types';
+import { BadgeDefinition } from './types';
 
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
   {

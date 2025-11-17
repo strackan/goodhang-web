@@ -69,7 +69,7 @@ export class LightningRoundScoringService {
     let totalTimeMs = 0;
 
     // Create a map for quick lookup
-    const questionMap = new Map(questions.map((q) => [q.id, q]));
+    const _questionMap = new Map(questions.map((q) => [q.id, q]));
     const answerMap = new Map(answers.map((a) => [a.question_id, a]));
 
     // Score each question

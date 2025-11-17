@@ -18,7 +18,7 @@ export default function SetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [, _setUserName] = useState<string | null>(null);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function SetPasswordPage() {
       }
 
       setUserEmail(session.user.email || null);
-      setUserName(session.user.user_metadata?.name || session.user.email || null);
+      // User name is available via userEmail
       setIsAuthChecking(false);
     }
 

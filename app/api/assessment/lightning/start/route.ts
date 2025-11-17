@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     let body: StartLightningRoundRequest;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch (_error) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 

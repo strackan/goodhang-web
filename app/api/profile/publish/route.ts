@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user profile for display name
-    const { data: _profile, error: profileError } = await supabase
+    const { error: profileError } = await supabase
       .from('profiles')
       .select('full_name, email')
       .eq('id', user.id)

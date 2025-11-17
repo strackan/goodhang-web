@@ -25,7 +25,7 @@ interface GlitchIntroProps {
 
 export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroProps) {
   // Hook 1: Lifecycle management
-  const { shouldSkip, isCompressed, contentLoaded, isAliveRef } = useGlitchLifecycle({ onComplete });
+  const { shouldSkip, isCompressed, __contentLoaded, isAliveRef } = useGlitchLifecycle({ onComplete });
 
   // Hook 2: Image preloading
   const { flashImages, backgroundImages } = useGlitchImages();
@@ -33,7 +33,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   // Hook 3: Animation loop (with memory leak fixes)
   const {
     phase,
-    elapsed,
+    _elapsed,
     displayText,
     activeFlashes,
     activeBackground,

@@ -44,13 +44,13 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
       formData.append('referring_site', 'goodhang.club');
 
       // Submit to Substack
-      const response = await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
+      const _response = await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
         method: 'POST',
         body: formData,
         mode: 'no-cors', // Substack doesn't support CORS, but submission will work
       });
 
-      // With no-cors, we can't read the response, but if we get here, it likely worked
+      // With no-cors, we can't read the _response, but if we get here, it likely worked
       setSubscribeSuccess(true);
       setEmail('');
       setTimeout(() => setSubscribeSuccess(false), 5000);

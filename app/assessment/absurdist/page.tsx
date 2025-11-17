@@ -108,7 +108,7 @@ export default function AbsurdistQuestionsPage() {
 
     // Filter out empty answers
     const validAnswers = Object.fromEntries(
-      Object.entries(finalAnswers).filter(([_, answer]) => answer.trim())
+      Object.entries(finalAnswers).filter(([_key, answer]) => answer.trim())
     );
 
     if (Object.keys(validAnswers).length === 0) {

@@ -22,7 +22,7 @@ export default function PendingInvitesPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [userRole, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
+  const [, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
   const [invites, setInvites] = useState<PendingInvite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

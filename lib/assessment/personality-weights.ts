@@ -210,7 +210,7 @@ export function getPersonalityChallenges(personalityType: PersonalityType): Scor
 export function scoresMatchPersonality(
   scores: AssessmentDimensions,
   personalityType: PersonalityType,
-  threshold: number = 5
+  _threshold: number = 5
 ): boolean {
   const expectedStrengths = getPersonalityStrengths(personalityType);
   const expectedChallenges = getPersonalityChallenges(personalityType);

@@ -208,7 +208,7 @@ export class OfflineQueue {
         // Success - remove from queue
         this.queue.shift();
         this.saveToStorage();
-      } catch (error) {
+      } catch (_error) {
         item.retries++;
         if (item.retries >= 3) {
           // Failed too many times - remove

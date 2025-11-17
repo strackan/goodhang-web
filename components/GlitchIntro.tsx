@@ -20,11 +20,11 @@ const DEFAULT_QUOTE = "Fully alive, well connected, and supported human beings a
 
 export function GlitchIntro({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroProps) {
   const [phase, setPhase] = useState<GlitchPhase>(GlitchPhase.INITIAL);
-  const [elapsed, setElapsed] = useState(0);
+  const [_elapsed, setElapsed] = useState(0);
   const [displayText, setDisplayText] = useState(quote);
   const [showFlash, setShowFlash] = useState(false);
   const [flashType, setFlashType] = useState<'tech' | 'social'>('tech');
-  const [flashIndex, setFlashIndex] = useState(0);
+  const [_flashIndex, setFlashIndex] = useState(0);
   const [showWarning, setShowWarning] = useState(true);
   const [isCompressed, setIsCompressed] = useState(false);
 
@@ -49,7 +49,7 @@ export function GlitchIntro({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroPr
 
     const maxTime = isCompressed ? GLITCH_TIMING.COMPRESSED : GLITCH_TIMING.TOTAL;
     let animationFrame: number;
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     const animate = () => {
       const now = Date.now();

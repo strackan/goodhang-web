@@ -21,8 +21,8 @@ export default function InvitePage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [userRole, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
-  const [userRegionId, setUserRegionId] = useState<string | null>(null);
+  const [, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
+  const [, setUserRegionId] = useState<string | null>(null);
   const [regions, setRegions] = useState<Region[]>([]);
   const [loading, setLoading] = useState(true);
 
