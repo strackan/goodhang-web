@@ -12,6 +12,7 @@ import { memo } from 'react';
 interface NavigationButtonsProps {
   canGoPrevious: boolean;
   
+  canGoNext: boolean;
   isLastQuestion: boolean;
   isLoading: boolean;
   hasAnswer: boolean;
@@ -23,7 +24,7 @@ interface NavigationButtonsProps {
 function NavigationButtonsComponent({
   // canGoNext is not used in the component
   canGoPrevious,
-  canGoNext,
+  canGoNext: _canGoNext,
   isLastQuestion,
   isLoading,
   hasAnswer,

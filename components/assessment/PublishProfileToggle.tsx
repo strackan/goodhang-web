@@ -12,6 +12,7 @@
  */
 
 import { useState } from 'react';
+import type { CategoryScores } from '@/lib/assessment/types';
 
 interface PublishProfileToggleProps {
   sessionId: string;
@@ -26,7 +27,7 @@ interface PublishProfileToggleProps {
     best_fit_roles?: string[] | undefined;
     public_summary?: string | undefined;
     overall_score?: number | undefined;
-    category_scores?: Record<string, number>;
+    category_scores?: CategoryScores;
   };
   onPublishChange?: (published: boolean, slug?: string) => void;
 }

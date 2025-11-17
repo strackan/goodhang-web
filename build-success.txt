@@ -14,7 +14,7 @@
    - Environments: .env.local
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 2.5s
+ ✓ Compiled successfully in 2.8s
    Linting and checking validity of types ...
 
 ./app/assessment/lightning/page.tsx
@@ -41,14 +41,15 @@
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
 Failed to compile.
 
-./components/assessment/results/ResultsActions.tsx:100:13
-Type error: Type 'CategoryScores | undefined' is not assignable to type 'Record<string, number> | undefined' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+./app/api/profiles/[slug]/route.ts:47:15
+Type error: Conversion of type 'PublicProfile' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'PublicProfile'.
 
-[0m [90m  98 |[39m             public_summary[33m:[39m results[33m.[39mpublic_summary [33m||[39m undefined[33m,[39m
- [90m  99 |[39m             overall_score[33m:[39m results[33m.[39moverall_score[33m,[39m
-[31m[1m>[22m[39m[90m 100 |[39m             category_scores[33m:[39m results[33m.[39mcategory_scores [33m||[39m undefined[33m,[39m
- [90m     |[39m             [31m[1m^[22m[39m
- [90m 101 |[39m           }}
- [90m 102 |[39m           onPublishChange[33m=[39m{(published[33m,[39m slug) [33m=>[39m {
- [90m 103 |[39m             [36mif[39m (published [33m&&[39m slug) {[0m
+[0m [90m 45 |[39m     [90m// Hide email if not explicitly set (already handled by publish API, but double-check)[39m
+ [90m 46 |[39m     [36mif[39m ([33m![39msanitizedProfile[33m.[39memail) {
+[31m[1m>[22m[39m[90m 47 |[39m       [36mdelete[39m (sanitizedProfile [36mas[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m unknown[33m>[39m)[33m.[39memail[33m;[39m
+ [90m    |[39m               [31m[1m^[22m[39m
+ [90m 48 |[39m     }
+ [90m 49 |[39m
+ [90m 50 |[39m     [36mreturn[39m [33mNextResponse[39m[33m.[39mjson(sanitizedProfile)[33m;[39m[0m
 Next.js build worker exited with code: 1 and signal: null
