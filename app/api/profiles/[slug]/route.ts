@@ -44,7 +44,8 @@ export async function GET(
 
     // Hide email if not explicitly set (already handled by publish API, but double-check)
     if (!sanitizedProfile.email) {
-      delete (sanitizedProfile as Record<string, unknown>).email;
+      const { email: _removedEmail, ...profileWithoutEmail } = sanitizedProfile;
+      return NextResponse.json(profileWithoutEmail);
     }
 
     return NextResponse.json(sanitizedProfile);
