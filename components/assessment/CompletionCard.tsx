@@ -19,7 +19,7 @@ function CompletionCardComponent({ isLoading, onComplete }: CompletionCardProps)
   return (
     <div className="bg-gradient-to-br from-green-900/20 to-blue-900/20 border border-green-500/30 rounded-lg p-8 text-center">
       <h3 className="text-2xl font-semibold text-white mb-4">
-        You've completed all questions!
+        You&apos;ve completed all questions!
       </h3>
       <p className="text-gray-300 mb-6">
         Click below to submit your assessment and see your results. Our AI will analyze your

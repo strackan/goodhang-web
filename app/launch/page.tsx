@@ -243,7 +243,7 @@ export default function LaunchPartyPage() {
               </p>
             </div>
             <p className="text-foreground-dim mb-8 font-mono">
-              Reserve your spot. We'll send event updates and reminders.
+              Reserve your spot. We&apos;ll send event updates and reminders.
             </p>
 
             <RSVPForm eventId={LAUNCH_EVENT_ID} currentUser={null} />

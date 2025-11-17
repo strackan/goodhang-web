@@ -72,7 +72,7 @@ export default async function PendingApprovalPage() {
           {/* What's Next */}
           <div className="border-2 border-neon-cyan/30 bg-background-lighter p-8 mb-8">
             <h2 className="text-2xl font-bold font-mono neon-cyan mb-6">
-              WHAT'S NEXT?
+              WHAT&apos;S NEXT?
             </h2>
 
             <div className="space-y-6 font-mono">
@@ -82,7 +82,7 @@ export default async function PendingApprovalPage() {
                     1. Complete Your Application
                   </h3>
                   <p className="text-foreground-dim mb-4">
-                    You've created an account but haven't submitted your membership application yet.
+                    You&apos;ve created an account but haven&apos;t submitted your membership application yet.
                   </p>
                   <Link
                     href="/apply"
@@ -99,7 +99,7 @@ export default async function PendingApprovalPage() {
                     1. Application Received ✓
                   </h3>
                   <p className="text-foreground-dim">
-                    We've received your application and our team is reviewing it. You'll hear from us within 2-3 business days.
+                    We&apos;ve received your application and our team is reviewing it. You&apos;ll hear from us within 2-3 business days.
                   </p>
                 </div>
               )}
@@ -129,7 +129,7 @@ export default async function PendingApprovalPage() {
                   3. Approval & Welcome
                 </h3>
                 <p className="text-foreground-dim">
-                  Once approved, you'll get full access to the member dashboard, events, and directory.
+                  Once approved, you&apos;ll get full access to the member dashboard, events, and directory.
                 </p>
               </div>
             </div>

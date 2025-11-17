@@ -181,7 +181,7 @@ export function OfflineStatusBanner() {
           />
         </svg>
         <span className="font-mono text-sm">
-          You're offline. Changes will sync when reconnected.
+          You&apos;re offline. Changes will sync when reconnected.
         </span>
       </div>
     </div>

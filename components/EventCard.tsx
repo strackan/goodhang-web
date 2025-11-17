@@ -72,7 +72,7 @@ export function EventCard({ event, userRsvp, isPast = false }: EventCardProps) {
 
             {userRsvp && !isPast && (
               <span className="px-3 py-1 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-mono text-xs uppercase">
-                You're in!
+                You&apos;re in!
               </span>
             )}
           </div>

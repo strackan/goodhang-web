@@ -85,7 +85,7 @@ export default function ApplyPage() {
                 </li>
                 <li className="flex items-start">
                   <span className="text-neon-purple mr-3 font-bold">3.</span>
-                  <span>If approved, you'll get an invite link to create your account</span>
+                  <span>If approved, you&apos;ll get an invite link to create your account</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-neon-purple mr-3 font-bold">4.</span>

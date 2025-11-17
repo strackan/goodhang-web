@@ -182,7 +182,7 @@ export function ApplicationReviewForm({
               className="w-full px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors"
             />
             <p className="text-foreground-dim font-mono text-xs mt-1">
-              Optional: Track when you've scheduled their evaluation interview
+              Optional: Track when you&apos;ve scheduled their evaluation interview
             </p>
           </div>
 

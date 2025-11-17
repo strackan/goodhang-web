@@ -1,0 +1,31 @@
+
+> goodhang-web@0.1.0 build
+> next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\strac\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\strac\dev\goodhang\goodhang-web\package-lock.json
+   * C:\Users\strac\dev\goodhang\package-lock.json
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.3s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/assessment/lightning/start/route.ts:7:3
+Type error: Module '"@/lib/assessment/types"' has no exported member 'StartLightningRoundRequest'.
+
+[0m [90m  5 |[39m [36mimport[39m { createClient } [36mfrom[39m [32m'@/lib/supabase/server'[39m[33m;[39m
+ [90m  6 |[39m [36mimport[39m {
+[31m[1m>[22m[39m[90m  7 |[39m   [33mStartLightningRoundRequest[39m[33m,[39m
+ [90m    |[39m   [31m[1m^[22m[39m
+ [90m  8 |[39m   [33mStartLightningRoundResponse[39m[33m,[39m
+ [90m  9 |[39m   [33mLightningRoundQuestion[39m[33m,[39m
+ [90m 10 |[39m   [33mLightningDifficulty[39m[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null

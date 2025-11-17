@@ -139,10 +139,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               <div className="text-center">
                 <div className="text-6xl mb-4">✓</div>
                 <h2 className="text-3xl font-bold font-mono neon-cyan mb-4">
-                  YOU'RE ON THE LIST!
+                  YOU&apos;RE ON THE LIST!
                 </h2>
                 <p className="text-foreground-dim font-mono mb-6">
-                  We'll see you there!
+                  We&apos;ll see you there!
                   {userRsvp.plus_ones > 0 && ` (You + ${userRsvp.plus_ones})`}
                 </p>
                 <p className="text-foreground-dim font-mono text-sm">
@@ -167,7 +167,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   RSVP NOW
                 </h2>
                 <p className="text-foreground-dim font-mono mb-8">
-                  Reserve your spot. We'll send you event reminders.
+                  Reserve your spot. We&apos;ll send you event reminders.
                 </p>
                 <RSVPForm eventId={event.id} currentUser={user} />
               </>
@@ -178,7 +178,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           {event.rsvps && event.rsvps.length > 0 && (
             <div className="mt-8 border-2 border-foreground-dim/20 bg-background-lighter p-6">
               <h3 className="text-xl font-bold font-mono neon-magenta mb-4">
-                Who's Coming
+                Who&apos;s Coming
               </h3>
               <p className="text-foreground-dim font-mono text-sm">
                 {totalAttendees} {totalAttendees === 1 ? 'person is' : 'people are'} attending this event

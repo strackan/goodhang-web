@@ -161,7 +161,7 @@ function LightningTimerComponent({ duration, onExpire }: LightningTimerProps) {
 
       {isExpired && (
         <div className="mt-4 text-red-400 text-sm font-semibold">
-          Time's up!
+          Time&apos;s up!
         </div>
       )}
     </div>

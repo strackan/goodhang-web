@@ -152,7 +152,7 @@ export default function LoginPage() {
 
           <div className="mt-6 pt-6 border-t border-neon-purple/20 text-center">
             <p className="text-foreground-dim font-mono text-sm">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/apply" className="text-neon-cyan hover:text-neon-magenta transition-colors">
                 Apply for membership
               </Link>

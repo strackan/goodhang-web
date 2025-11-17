@@ -58,7 +58,7 @@ export function ResultsActions({ sessionId, isPublished, results }: ResultsActio
               Join the GoodHang Community
             </h2>
             <p className="text-gray-300 text-lg mb-2">
-              You've completed the assessment! Now join our community to connect with other talented CS professionals.
+              You&apos;ve completed the assessment! Now join our community to connect with other talented CS professionals.
             </p>
             <p className="text-gray-400 text-sm">
               Get access to exclusive events, networking opportunities, and career resources.

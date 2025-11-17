@@ -108,7 +108,7 @@ export default async function MembersPage() {
                     Upcoming Events
                   </h3>
                   <p className="text-foreground-dim font-mono text-sm">
-                    See what's happening and RSVP
+                    See what&apos;s happening and RSVP
                   </p>
                 </Link>
 

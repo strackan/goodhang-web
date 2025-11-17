@@ -138,7 +138,7 @@ export function OnboardingIntro({ onStart, isLoading = false }: OnboardingIntroP
 
         {/* What We'll Assess */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-purple-300 mb-4">What We'll Assess</h2>
+          <h2 className="text-xl font-semibold text-purple-300 mb-4">What We&apos;ll Assess</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
               { icon: '🧠', title: 'Personality & Work Style', desc: 'MBTI, Enneagram, and work preferences' },
@@ -172,7 +172,7 @@ export function OnboardingIntro({ onStart, isLoading = false }: OnboardingIntroP
           <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-start gap-2">
               <span className="text-blue-400 flex-shrink-0">•</span>
-              <span>Be honest - there are no "right" answers, just authentic ones</span>
+              <span>Be honest - there are no &quot;right&quot; answers, just authentic ones</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-400 flex-shrink-0">•</span>

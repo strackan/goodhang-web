@@ -157,7 +157,7 @@ function LightningResultsComponent({
               {percentile >= 75 && (
                 <li className="flex items-start">
                   <span className="text-green-400 mr-2">✓</span>
-                  <span>You're in the top quartile of test takers</span>
+                  <span>You&apos;re in the top quartile of test takers</span>
                 </li>
               )}
               {difficultyAchieved === 'advanced' || difficultyAchieved === 'insane' ? (

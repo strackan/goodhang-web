@@ -67,7 +67,7 @@ export default async function EventsPage() {
             </h1>
             <p className="text-xl text-foreground-dim font-mono max-w-2xl mx-auto">
               From happy hours to road trips —
-              <span className="text-neon-purple"> experiences you'll actually remember</span>
+              <span className="text-neon-purple"> experiences you&apos;ll actually remember</span>
             </p>
           </div>
 
