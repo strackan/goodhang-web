@@ -366,8 +366,8 @@ describe('BadgeEvaluatorService', () => {
       const details = BadgeEvaluatorService.getBadgeDetails(badgeIds);
 
       expect(details.length).toBe(2);
-      expect(details[0].id).toBe('ai_prodigy');
-      expect(details[1].id).toBe('technical_maestro');
+      expect(details[0]?.id).toBe("ai_prodigy");
+      expect(details[1]?.id).toBe("technical_maestro");
     });
 
     it('should return empty array for invalid IDs', () => {
@@ -405,7 +405,7 @@ describe('BadgeEvaluatorService', () => {
       const customTimestamp = '2024-01-15T10:00:00Z';
       const formatted = BadgeEvaluatorService.formatBadgesForResponse(badgeIds, customTimestamp);
 
-      expect(formatted[0].earned_at).toBe(customTimestamp);
+      expect(formatted[0]?.earned_at).toBe(customTimestamp);
     });
 
     it('should format multiple badges', () => {

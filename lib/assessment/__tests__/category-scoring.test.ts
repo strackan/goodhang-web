@@ -8,7 +8,7 @@ import {
   isWellRounded,
   generateCategoryInsights,
 } from '../category-scoring';
-import { AssessmentDimensions, CategoryScores } from '../types';
+import { AssessmentDimensions } from '../types';
 
 describe('Category Scoring Utilities', () => {
   // Sample dimension scores for testing
