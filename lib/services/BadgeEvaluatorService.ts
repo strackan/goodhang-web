@@ -150,7 +150,7 @@ export class BadgeEvaluatorService {
       const match = answerText.match(pattern);
       if (match) {
         // For ranges (3-5 years), take the upper bound
-        const years = match[2] ? parseInt(match[2]) : parseInt(match[1]);
+        const years = match[2] ? parseInt(match[2]) : parseInt(match[1] || "0");
         return years;
       }
     }
