@@ -13,8 +13,10 @@
  */
 
 import { useState, useEffect } from 'react';
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
+export const dynamic = 'error';
 import { ProfileCard } from '@/components/profiles/ProfileCard';
 import type { PublicProfile } from '@/lib/assessment/types';
 
@@ -28,7 +30,7 @@ interface BrowseProfilesResponse {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-export default function BrowseProfilesPage() {
+function BrowseProfilesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -289,5 +291,20 @@ export default function BrowseProfilesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BrowseProfilesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-black to-blue-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-6"></div>
+          <h2 className="text-2xl font-semibold text-white">Loading profiles...</h2>
+        </div>
+      </div>
+    }>
+      <BrowseProfilesContent />
+    </Suspense>
   );
 }

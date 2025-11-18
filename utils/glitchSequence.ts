@@ -110,7 +110,7 @@ export function corruptCharacter(text: string, intensity: number = 0.1): string 
     const randomIndex = Math.floor(Math.random() * chars.length);
     // Don't corrupt spaces
     if (chars[randomIndex] !== ' ') {
-      chars[randomIndex] = CORRUPTION_CHARS[Math.floor(Math.random() * CORRUPTION_CHARS.length)];
+      chars[randomIndex] = CORRUPTION_CHARS[Math.floor(Math.random() * CORRUPTION_CHARS.length)] ?? '';
     }
   }
 

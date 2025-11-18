@@ -87,12 +87,11 @@ export class ProfilePrivacyService {
    */
   static redactForLogging(profile: PublicProfile): Partial<PublicProfile> {
     return {
-      ...(session.archetype && { archetype: session.archetype }),
       user_id: profile.user_id.substring(0, 8) + '...',
       profile_slug: profile.profile_slug,
       name: profile.name,
       career_level: profile.career_level,
-      archetype: profile.archetype,
+      ...(profile.archetype && { archetype: profile.archetype }),
       show_scores: profile.show_scores,
       // Email intentionally omitted for privacy
     };

@@ -11,10 +11,11 @@
  * - Playful design
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnswerInput } from '@/components/assessment/AnswerInput';
 
+export const dynamic = 'error';
 interface AbsurdistQuestion {
   id: string;
   title: string;
@@ -22,7 +23,7 @@ interface AbsurdistQuestion {
   question: string;
 }
 
-export default function AbsurdistQuestionsPage() {
+function AbsurdistQuestionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
@@ -324,5 +325,20 @@ export default function AbsurdistQuestionsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AbsurdistQuestionsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-orange-950 via-black to-pink-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-orange-400 mx-auto mb-6"></div>
+          <h2 className="text-2xl font-semibold text-white">Loading...</h2>
+        </div>
+      </div>
+    }>
+      <AbsurdistQuestionsContent />
+    </Suspense>
   );
 }
