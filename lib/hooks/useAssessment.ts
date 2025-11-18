@@ -211,9 +211,11 @@ export function useAssessment(): UseAssessmentReturn {
     else if (currentSectionIndex > 0) {
       const prevSectionIndex = currentSectionIndex - 1;
       const prevSection = assessment.sections[prevSectionIndex];
+      if (prevSection) {
       setCurrentSectionIndex(prevSectionIndex);
       setCurrentQuestionIndex(prevSection.questions.length - 1);
     }
+      }
   }, [assessment, currentSectionIndex, currentQuestionIndex]);
 
   // Complete assessment and trigger scoring
