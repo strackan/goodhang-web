@@ -177,7 +177,7 @@ export class ValidationError extends Error {
       timestamp: this.timestamp,
       ...(process.env.NODE_ENV === 'development' && {
         stack: this.stack,
-        zodError: this.zodError?.errors,
+        zodError: this.zodError?.issues,
       }),
     };
   }
