@@ -44,7 +44,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
       formData.append('referring_site', 'goodhang.club');
 
       // Submit to Substack
-      const _response = await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
+      await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
         method: 'POST',
         body: formData,
         mode: 'no-cors', // Substack doesn't support CORS, but submission will work
