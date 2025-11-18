@@ -122,7 +122,7 @@ export class AssessmentScoringService {
         throw new Error('No scoring JSON found in Claude response');
       }
 
-      const scoringData = JSON.parse(jsonMatch[1]);
+      const scoringData = JSON.parse(jsonMatch[1] || "{}");
       return scoringData;
     } catch (error) {
       console.error('Error parsing Claude scoring response:', error);
