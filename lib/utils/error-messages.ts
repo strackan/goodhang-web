@@ -153,7 +153,7 @@ export function formatErrorForLogging(error: Error | unknown): {
     return {
       message: error.message,
       name: error.name,
-      stack: error.stack,
+      ...(error.stack && { stack: error.stack }),
       timestamp,
     };
   }

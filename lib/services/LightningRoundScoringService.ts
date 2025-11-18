@@ -103,7 +103,7 @@ export class LightningRoundScoringService {
       correct_count: correctCount,
       total_questions: totalQuestions,
       time_bonus: Math.round(timeBonus),
-      difficulty_achieved: difficulty,
+      difficulty_achieved: difficulty as LightningDifficulty,
     };
   }
 
