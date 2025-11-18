@@ -33,7 +33,7 @@ export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntro
   // Hook 3: Animation loop (with memory leak fixes)
   const {
     phase,
-    _elapsed,
+    elapsed: _elapsed,
     displayText,
     activeFlashes,
     activeBackground,
