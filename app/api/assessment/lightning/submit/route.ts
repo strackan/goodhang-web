@@ -91,7 +91,6 @@ export async function POST(request: NextRequest) {
 
     // Determine difficulty achieved
     const difficultyAchieved = LightningRoundScoringService.determineDifficultyAchieved(
-      scoringResult.score,
       scoringResult.accuracy,
       difficulty
     );
