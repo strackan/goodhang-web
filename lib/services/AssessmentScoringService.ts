@@ -112,7 +112,8 @@ export class AssessmentScoringService {
     });
 
     // Parse Claude's response
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const firstContent = message.content[0];
+    const responseText = firstContent?.type === 'text' ? firstContent.text : '';
 
     try {
       // Extract JSON from response (Claude will wrap it in <scoring> tags)
