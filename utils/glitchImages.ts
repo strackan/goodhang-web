@@ -34,7 +34,7 @@ export const GLITCH_IMAGES: GlitchImage[] = [
 // Get random image of specific type
 export function getRandomImage(type: 'tech' | 'macabre' | 'social'): GlitchImage {
   const filtered = GLITCH_IMAGES.filter(img => img.type === type);
-  return filtered[Math.floor(Math.random() * filtered.length)];
+  return filtered[Math.floor(Math.random() * filtered.length)] ?? images[0];
 }
 
 // Get random image path

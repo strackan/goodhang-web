@@ -215,7 +215,7 @@ export class LightningRoundScoringService {
       // Achieved one level below selected
       const levels: LightningDifficulty[] = ['easy', 'intermediate', 'advanced', 'insane'];
       const index = levels.indexOf(selectedDifficulty);
-      return index > 0 ? levels[index - 1] : 'easy';
+      return index > 0 ? levels[index - 1]  as LightningDifficulty;
     }
 
     if (accuracy >= 60) {

@@ -87,6 +87,7 @@ export class ProfilePrivacyService {
    */
   static redactForLogging(profile: PublicProfile): Partial<PublicProfile> {
     return {
+      ...(session.archetype && { archetype: session.archetype }),
       user_id: profile.user_id.substring(0, 8) + '...',
       profile_slug: profile.profile_slug,
       name: profile.name,
