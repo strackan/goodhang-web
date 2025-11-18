@@ -25,7 +25,7 @@ interface GlitchIntroProps {
 
 export function GlitchIntroV2({ onComplete, quote = DEFAULT_QUOTE }: GlitchIntroProps) {
   // Hook 1: Lifecycle management
-  const { shouldSkip, isCompressed, __contentLoaded, isAliveRef } = useGlitchLifecycle({ onComplete });
+  const { shouldSkip, isCompressed, contentLoaded: _contentLoaded, isAliveRef } = useGlitchLifecycle({ onComplete });
 
   // Hook 2: Image preloading
   const { flashImages, backgroundImages } = useGlitchImages();
