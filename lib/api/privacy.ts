@@ -9,53 +9,53 @@ import type { PublicProfile } from '@/lib/assessment/types';
  */
 export function sanitizePublicProfile(profile: Record<string, unknown>): PublicProfile {
   const sanitized: PublicProfile = {
-    user_id: profile.user_id,
-    session_id: profile.session_id,
-    profile_slug: profile.profile_slug,
-    name: profile.name,
-    career_level: profile.career_level,
-    years_experience: profile.years_experience,
-    show_scores: profile.show_scores || false,
-    published_at: profile.published_at,
-    updated_at: profile.updated_at,
+    user_id: profile.user_id as string,
+    session_id: profile.session_id as string | null,
+    profile_slug: profile.profile_slug as string,
+    name: profile.name as string,
+    career_level: profile.career_level as string,
+    years_experience: profile.years_experience as number,
+    show_scores: (profile.show_scores as boolean) || false,
+    published_at: profile.published_at as string,
+    updated_at: profile.updated_at as string,
   };
 
   // Optional fields
   if (profile.email) {
-    sanitized.email = profile.email;
+    sanitized.email = profile.email as string;
   }
 
   if (profile.self_description) {
-    sanitized.self_description = profile.self_description;
+    sanitized.self_description = profile.self_description as string;
   }
 
   if (profile.personality_type) {
-    sanitized.personality_type = profile.personality_type;
+    sanitized.personality_type = profile.personality_type as string;
   }
 
   if (profile.archetype) {
-    sanitized.archetype = profile.archetype;
+    sanitized.archetype = profile.archetype as string;
   }
 
   if (profile.badges) {
-    sanitized.badges = profile.badges;
+    sanitized.badges = profile.badges as string[];
   }
 
   if (profile.best_fit_roles) {
-    sanitized.best_fit_roles = profile.best_fit_roles;
+    sanitized.best_fit_roles = profile.best_fit_roles as string[];
   }
 
   if (profile.public_summary) {
-    sanitized.public_summary = profile.public_summary;
+    sanitized.public_summary = profile.public_summary as string;
   }
 
   if (profile.video_url) {
-    sanitized.video_url = profile.video_url;
+    sanitized.video_url = profile.video_url as string;
   }
 
   // Only include scores if show_scores is true
   if (profile.show_scores) {
-    sanitized.overall_score = profile.overall_score;
+    sanitized.overall_score = profile.overall_score as number;
     sanitized.category_scores = profile.category_scores;
   }
 
