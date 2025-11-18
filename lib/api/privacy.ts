@@ -1,6 +1,6 @@
 // Privacy validation and sanitization utilities for public profiles
 
-import type { PublicProfile } from '@/lib/assessment/types';
+import type { PublicProfile, CategoryScores } from '@/lib/assessment/types';
 
 /**
  * Sanitize a public profile to respect privacy settings
@@ -56,7 +56,7 @@ export function sanitizePublicProfile(profile: Record<string, unknown>): PublicP
   // Only include scores if show_scores is true
   if (profile.show_scores) {
     sanitized.overall_score = profile.overall_score as number;
-    sanitized.category_scores = profile.category_scores;
+    sanitized.category_scores = profile.category_scores as CategoryScores;
   }
 
   return sanitized;
