@@ -142,7 +142,7 @@ export class ValidationError extends Error {
    * @returns ValidationError with formatted failures
    */
   static fromZodError(zodError: z.ZodError, entity?: string): ValidationError {
-    const failures: ValidationFailure[] = zodError.errors.map((err) => ({
+    const failures: ValidationFailure[] = zodError.issues.map((err) => ({
       field: err.path.join('.') || 'root',
       message: err.message,
       code: err.code,
