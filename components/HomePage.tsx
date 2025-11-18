@@ -11,10 +11,6 @@ interface HomePageProps {
 
 export function HomePage({ onRewatchIntro }: HomePageProps) {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [email, setEmail] = useState('');
-  const [subscribeLoading, setSubscribeLoading] = useState(false);
-  const [subscribeSuccess, setSubscribeSuccess] = useState(false);
-  const [subscribeError, setSubscribeError] = useState('');
 
   useEffect(() => {
     // Check if redirected from Typeform with success parameter
@@ -28,39 +24,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
     }
   }, []);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubscribeLoading(true);
-    setSubscribeError('');
 
-    try {
-      // Create FormData for Substack
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('first_url', window.location.href);
-      formData.append('first_referrer', document.referrer || '');
-      formData.append('current_url', window.location.href);
-      formData.append('source', 'goodhang-web');
-      formData.append('referring_site', 'goodhang.club');
-
-      // Submit to Substack
-      await fetch('https://goodhang33.substack.com/api/v1/free?nojs=true', {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors', // Substack doesn't support CORS, but submission will work
-      });
-
-      // With no-cors, we can't read the _response, but if we get here, it likely worked
-      setSubscribeSuccess(true);
-      setEmail('');
-      setTimeout(() => setSubscribeSuccess(false), 5000);
-    } catch (error) {
-      console.error('Subscription error:', error);
-      setSubscribeError('Something went wrong. Please try again.');
-    } finally {
-      setSubscribeLoading(false);
-    }
-  };
 
   return (
     <>
@@ -76,8 +40,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
               <DesktopNav
                 links={[
                   { href: '/about', label: 'About' },
-                  { href: '/events', label: 'Events' },
-                  { href: '/login', label: 'Member Login' },
+                                    { href: '/login', label: 'Member Login' },
                 ]}
               />
               {onRewatchIntro && (
@@ -92,8 +55,7 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
               <MobileNav
                 links={[
                   { href: '/about', label: 'About' },
-                  { href: '/events', label: 'Events' },
-                  { href: '/login', label: 'Member Login' },
+                                    { href: '/login', label: 'Member Login' },
                 ]}
               />
             </div>
@@ -130,11 +92,8 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-              <NeonButton variant="cyan" href="/launch">
-                RSVP for Launch Party
-              </NeonButton>
-              <NeonButton variant="purple" href="#join">
-                Apply for Membership
+              <NeonButton variant="cyan" href="/apply">
+                Take the Assessment
               </NeonButton>
             </div>
 
@@ -165,50 +124,22 @@ export function HomePage({ onRewatchIntro }: HomePageProps) {
             />
           </div>
 
-          {/* Email Signup Section */}
+          {/* Take the Assessment Section */}
           <div id="join" className="max-w-2xl mx-auto pt-32 pb-20">
-            <div className="border-2 border-neon-purple/30 bg-background-lighter p-8 md:p-12">
-              <h2 className="text-3xl md:text-4xl font-bold font-mono neon-purple mb-4">
-                JOIN THE CLUB
+            <div className="border-2 border-neon-purple/30 bg-background-lighter p-8 md:p-12 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold font-mono neon-purple mb-6">
+                TAKE THE ASSESSMENT
               </h2>
+              <p className="text-foreground-dim mb-8 font-mono text-lg">
+                Discover your work style, connect with your tribe, and unlock exclusive membership.
+              </p>
               <p className="text-foreground-dim mb-8 font-mono">
-                Get on the list. We&apos;re building something different. No spam, just updates about events and membership.
+                Our assessment is our gift to you—keep your detailed results forever, whether you join or not.
               </p>
 
-              {subscribeSuccess && (
-                <div className="mb-6 border-2 border-neon-cyan bg-neon-cyan/10 p-4">
-                  <p className="text-neon-cyan font-mono text-sm">
-                    ✓ You&apos;re on the list! Check your email to confirm.
-                  </p>
-                </div>
-              )}
-
-              {subscribeError && (
-                <div className="mb-6 border-2 border-neon-magenta bg-neon-magenta/10 p-4">
-                  <p className="text-neon-magenta font-mono text-sm">
-                    {subscribeError}
-                  </p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={subscribeLoading}
-                  className="flex-1 px-4 py-3 bg-background border-2 border-neon-cyan/30 text-foreground font-mono focus:border-neon-cyan focus:outline-none transition-colors disabled:opacity-50"
-                />
-                <button
-                  type="submit"
-                  disabled={subscribeLoading}
-                  className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-background font-mono uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {subscribeLoading ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </form>
+              <NeonButton variant="cyan" href="/apply">
+                Start the Assessment
+              </NeonButton>
             </div>
           </div>
         </main>
