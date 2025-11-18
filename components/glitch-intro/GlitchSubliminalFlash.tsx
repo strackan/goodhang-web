@@ -6,7 +6,7 @@ interface GlitchSubliminalFlashProps {
   flashBackground: boolean;
 }
 
-export function GlitchSubliminalFlash({ show, message, _flashBackground }: GlitchSubliminalFlashProps) {
+export function GlitchSubliminalFlash({ show, message, flashBackground: _flashBackground }: GlitchSubliminalFlashProps) {
   if (!show) return null;
 
   return (

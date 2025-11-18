@@ -92,12 +92,13 @@ export function ResultsActions({ sessionId, isPublished, results }: ResultsActio
             archetype: results.archetype,
             career_level: 'mid', // TODO: Get from session
             years_experience: 0, // TODO: Get from session
-            personality_type: results.personality_profile?.mbti || undefined,
-            badges: results.badges?.map(b => b.name) || undefined,
             best_fit_roles: results.best_fit_roles,
-            public_summary: results.public_summary || undefined,
             overall_score: results.overall_score,
-            category_scores: results.category_scores || undefined,
+            // Optional properties - only include if present
+            ...(results.personality_profile?.mbti && { personality_type: results.personality_profile.mbti }),
+            ...(results.badges && { badges: results.badges.map(b => b.name) }),
+            ...(results.public_summary && { public_summary: results.public_summary }),
+            ...(results.category_scores && { category_scores: results.category_scores }),
           }}
           onPublishChange={(published, slug) => {
             if (published && slug) {
