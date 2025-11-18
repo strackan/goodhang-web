@@ -256,7 +256,10 @@ export class ScoringErrorFactory {
     return new ScoringError(
       'Claude API returned invalid response format',
       ScoringErrorCode.CLAUDE_INVALID_RESPONSE,
-      { sessionId, rawResponse: rawResponse?.substring(0, 500) } // Truncate for logging
+      {
+        sessionId,
+        ...(rawResponse && { rawResponse: rawResponse.substring(0, 500) }) // Truncate for logging
+      }
     );
   }
 
