@@ -85,7 +85,7 @@ export function getPhaseFromElapsed(elapsed: number): GlitchPhase {
  */
 export function shouldShowFlash(elapsed: number): { show: boolean; type?: string; index: number } {
   const activeFlash = FLASH_SCHEDULE.find(
-    (flash, index) => {
+    (flash) => {
       const inWindow = elapsed >= flash.time && elapsed < flash.time + flash.duration;
       return inWindow;
     }

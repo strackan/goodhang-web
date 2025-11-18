@@ -44,7 +44,7 @@ export function debouncePromise<T extends (...args: never[]) => Promise<unknown>
         timeoutId = setTimeout(async () => {
           try {
             const result = await func(...args);
-            resolve(result);
+            resolve(result as ReturnType<T>);
             pendingPromise = null;
             timeoutId = null;
           } catch (error) {

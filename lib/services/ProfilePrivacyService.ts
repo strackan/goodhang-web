@@ -19,8 +19,8 @@ export class ProfilePrivacyService {
 
     // Hide scores if user hasn't opted to show them
     if (!profile.show_scores) {
-      sanitized.overall_score = undefined;
-      sanitized.category_scores = undefined;
+      delete sanitized.overall_score;
+      delete sanitized.category_scores;
     }
 
     // Remove email field entirely if not provided

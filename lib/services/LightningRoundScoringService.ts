@@ -69,7 +69,7 @@ export class LightningRoundScoringService {
     let totalTimeMs = 0;
 
     // Create a map for quick lookup
-    const _questionMap = new Map(questions.map((q) => [q.id, q]));
+    // new Map(questions.map((q) => [q.id, q]));
     const answerMap = new Map(answers.map((a) => [a.question_id, a]));
 
     // Score each question
@@ -203,7 +203,7 @@ export class LightningRoundScoringService {
    * Used for badge evaluation
    */
   static determineDifficultyAchieved(
-    score: number,
+    // score: number,
     accuracy: number,
     selectedDifficulty: LightningDifficulty
   ): LightningDifficulty {

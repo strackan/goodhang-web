@@ -6,7 +6,6 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
 import * as path from 'path';
 
 // Initialize Supabase client
@@ -28,7 +27,6 @@ async function seedLightningQuestions() {
   try {
     // Read and execute the SQL file
     const sqlPath = path.join(__dirname, 'seed-lightning-questions.sql');
-    const sqlContent = fs.readFileSync(sqlPath, 'utf-8');
 
     console.log('📝 Executing SQL seed file...');
 
@@ -73,7 +71,6 @@ async function seedLightningQuestions() {
 
     const { data, error } = await supabase
       .from('lightning_round_questions')
-      .upsert(sampleQuestions, { onConflict: 'id' });
 
     if (error) {
       console.error('❌ Error seeding sample questions:', error);

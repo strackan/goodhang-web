@@ -14,7 +14,6 @@ async function cleanupDuplicates() {
   console.log('\n🧹 Cleaning up duplicate RSVPs...\n');
 
   // Execute the cleanup query
-  const { data, error } = await supabase.rpc('cleanup_duplicate_rsvps');
 
   if (error) {
     console.error('❌ Error:', error);

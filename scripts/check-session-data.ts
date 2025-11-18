@@ -38,7 +38,6 @@ async function checkSessions() {
     console.log(`  Progress: Section ${session.current_section_index}, Question ${session.current_question_index}`);
 
     const transcript = session.interview_transcript || [];
-    const questionCount = transcript.filter((m: any) => m.role === 'assistant').length;
     const answerCount = transcript.filter((m: any) => m.role === 'user').length;
 
     console.log(`  Questions Answered: ${answerCount} / 26`);
