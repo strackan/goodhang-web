@@ -238,7 +238,7 @@ export function useAssessment(): UseAssessmentReturn {
         throw new Error(error.error || 'Failed to complete assessment');
       }
 
-      const _completionData = await response.json();
+      await response.json();
 
       setStatus('completed');
 
