@@ -123,7 +123,7 @@ export function getWeakestCategory(categoryScores: CategoryScores): 'technical' 
     creative: categoryScores.creative.overall,
   };
 
-  const [weakest] = Object.entries(scores).sort(([, a], [, b]) => a - b)[0];
+  const weakest = Object.entries(scores).sort(([, a], [, b]) => a - b)[0]?.[0];
   return weakest as 'technical' | 'emotional' | 'creative';
 }
 

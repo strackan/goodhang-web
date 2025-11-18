@@ -82,7 +82,7 @@ export function validateProfileForPublishing(session: Record<string, unknown>, p
   }
 
   // Check required fields
-  if (!profile.full_name || profile.full_name.trim().length === 0) {
+  if (!profile.full_name || typeof profile.full_name !== 'string' || profile.full_name.trim().length === 0) {
     errors.push('Profile name is required');
   }
 
