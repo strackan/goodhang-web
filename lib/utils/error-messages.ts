@@ -149,11 +149,15 @@ export function formatErrorForLogging(error: Error | unknown): {
 } {
   const timestamp = new Date().toISOString();
 
+
   if (error instanceof Error) {
+    return {
+      message: error.message,
+      name: error.name,
       ...(error.stack && { stack: error.stack }),
-      stack: error.stack,
       timestamp,
     };
+  }
   }
 
   return {
