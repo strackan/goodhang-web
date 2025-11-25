@@ -6,7 +6,8 @@
  * Flow:
  * 1. Check if user is authenticated
  * 2. If not, show LinkedIn sign-in (required)
- * 3. If authenticated, start assessment
+ * 3. If authenticated, check for invite code and apply it
+ * 4. Start assessment
  */
 
 import { useState, useEffect } from 'react';
@@ -25,13 +26,36 @@ export default function AssessmentStartPage() {
     checkAuth();
   }, []);
 
+  const applyInviteCode = async () => {
+    // Check for invite code in sessionStorage (set by /apply page)
+    const inviteCode = sessionStorage.getItem('goodhang_invite_code');
+    if (inviteCode) {
+      try {
+        const response = await fetch('/api/invite-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: inviteCode }),
+        });
+        if (response.ok) {
+          console.log('Invite code applied successfully');
+        }
+        // Clear the code from storage regardless of success
+        sessionStorage.removeItem('goodhang_invite_code');
+      } catch (error) {
+        console.error('Error applying invite code:', error);
+        sessionStorage.removeItem('goodhang_invite_code');
+      }
+    }
+  };
+
   const checkAuth = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
 
-      // If authenticated, redirect to interview
+      // If authenticated, apply invite code if present and redirect to interview
       if (session) {
+        await applyInviteCode();
         router.push('/assessment/interview');
       }
     } catch (error) {

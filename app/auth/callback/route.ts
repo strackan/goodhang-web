@@ -11,34 +11,90 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.session) {
-      // Update profile with LinkedIn data if available
       const user = data.session.user
       const userMetadata = user.user_metadata
 
-      // Extract LinkedIn data from user metadata
-      const linkedinData = {
-        avatar_url: userMetadata.avatar_url || userMetadata.picture || null,
-        linkedin_url: userMetadata.provider_id
-          ? `https://www.linkedin.com/in/${userMetadata.provider_id}`
-          : null,
-      }
+      // Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id, assessment_status, invite_code_used')
+        .eq('id', user.id)
+        .single()
 
-      // Only update if we have LinkedIn data
-      if (linkedinData.avatar_url || linkedinData.linkedin_url) {
+      // If new user, create profile with initial assessment status
+      if (!existingProfile) {
+        const linkedinData = {
+          id: user.id,
+          email: user.email || '',
+          name: userMetadata.name || userMetadata.full_name || 'New Member',
+          avatar_url: userMetadata.avatar_url || userMetadata.picture || null,
+          linkedin_url: userMetadata.provider_id
+            ? `https://www.linkedin.com/in/${userMetadata.provider_id}`
+            : null,
+          assessment_status: 'not_started',
+        }
+
         await supabase
           .from('profiles')
-          .update(linkedinData)
-          .eq('id', user.id)
+          .insert(linkedinData)
+      } else {
+        // Update existing profile with LinkedIn data if available
+        const linkedinData = {
+          avatar_url: userMetadata.avatar_url || userMetadata.picture || null,
+          linkedin_url: userMetadata.provider_id
+            ? `https://www.linkedin.com/in/${userMetadata.provider_id}`
+            : null,
+        }
+
+        if (linkedinData.avatar_url || linkedinData.linkedin_url) {
+          await supabase
+            .from('profiles')
+            .update(linkedinData)
+            .eq('id', user.id)
+        }
+      }
+
+      // Get updated profile to check assessment status
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('assessment_status')
+        .eq('id', user.id)
+        .single()
+
+      // Determine redirect based on assessment status
+      let redirectPath = next
+
+      if (profile) {
+        switch (profile.assessment_status) {
+          case 'not_started':
+            redirectPath = '/assessment/start'
+            break
+          case 'in_progress':
+            redirectPath = '/assessment/questions'
+            break
+          case 'waitlist':
+          case 'rejected':
+            redirectPath = '/status/not-approved'
+            break
+          case 'pending_review':
+          case 'trial':
+          case 'approved':
+            redirectPath = next // Allow access to members area
+            break
+          default:
+            redirectPath = '/assessment/start'
+        }
       }
 
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
+
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(`${origin}${redirectPath}`)
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+        return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(`${origin}${redirectPath}`)
       }
     }
   }

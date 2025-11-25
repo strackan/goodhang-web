@@ -104,6 +104,28 @@ export async function POST(
       );
     }
 
+    // Update profile assessment status
+    // Check if user has an invite code (trial) or needs review (pending_review)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('invite_code_used, assessment_status')
+      .eq('id', user.id)
+      .single();
+
+    // Determine the new status based on whether they had an invite code
+    const newStatus = profile?.invite_code_used ? 'trial' : 'pending_review';
+
+    // Only update if not already approved
+    if (profile?.assessment_status !== 'approved') {
+      await supabase
+        .from('profiles')
+        .update({
+          assessment_status: newStatus,
+          assessment_completed_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+    }
+
     return NextResponse.json({
       session_id: sessionId,
       status: 'completed',

@@ -135,7 +135,7 @@ export default async function AdminDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="grid md:grid-cols-4 gap-6 mb-12">
             <Link
               href="/admin/applications"
               className="border-2 border-neon-cyan/30 hover:border-neon-cyan bg-background-lighter p-6 transition-all hover:scale-105"
@@ -169,6 +169,18 @@ export default async function AdminDashboard() {
               </h3>
               <p className="text-foreground-dim font-mono text-sm">
                 Create and manage events
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/invites"
+              className="border-2 border-green-500/30 hover:border-green-500 bg-background-lighter p-6 transition-all hover:scale-105"
+            >
+              <h3 className="text-xl font-bold font-mono text-green-400 mb-2">
+                Invite Codes
+              </h3>
+              <p className="text-foreground-dim font-mono text-sm">
+                Generate and manage invite codes
               </p>
             </Link>
           </div>
