@@ -112,8 +112,8 @@ export default function InvitePage() {
 
       const data = await response.json();
 
-      setInviteCode(data.contact.invite_code);
-      setInviteUrl(data.contact.invite_url);
+      setInviteCode(data.invite.invite_code);
+      setInviteUrl(data.invite.invite_url);
 
       // Clear form
       setName('');
