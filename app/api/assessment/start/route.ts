@@ -84,13 +84,16 @@ export async function POST(_request: NextRequest) {
     const response = {
       session_id: session.id,
       status: session.status,
+      assessment: coreQuestions,  // Hook expects 'assessment' not 'config'
+      current_section_index: session.current_section_index || 0,
+      current_question_index: session.current_question_index || 0,
+      resume: existingSession !== null,
       progress: {
         current_section: session.current_section || coreQuestions.sections[0]?.id || '',
         current_question: session.current_question || 0,
         total_questions: totalQuestions,
         percentage: Math.round((answersCount / totalQuestions) * 100),
       },
-      config: coreQuestions,
     };
 
     return NextResponse.json(response);
