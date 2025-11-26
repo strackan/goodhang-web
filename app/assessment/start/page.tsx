@@ -6,12 +6,14 @@
  * Flow:
  * 1. Check if user is authenticated
  * 2. If not, show LinkedIn sign-in (required)
- * 3. If authenticated, check for invite code and apply it
- * 4. Start assessment
+ * 3. If authenticated, check assessment status:
+ *    - not_started: go to interview
+ *    - in_progress: go to interview (resume)
+ *    - completed/approved/etc: show retake dialog
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { LinkedInSignInButton } from '@/components/auth/LinkedInSignInButton';
@@ -19,12 +21,22 @@ import { LinkedInSignInButton } from '@/components/auth/LinkedInSignInButton';
 export default function AssessmentStartPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showRetakeDialog, setShowRetakeDialog] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // Check if redirected here with completed=true (already completed assessment)
+  useEffect(() => {
+    if (searchParams.get('completed') === 'true') {
+      setShowRetakeDialog(true);
+      setIsLoading(false);
+    }
+  }, [searchParams]);
 
   const applyInviteCode = async () => {
     // Check for invite code in sessionStorage (set by /apply page)
@@ -53,10 +65,44 @@ export default function AssessmentStartPage() {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
 
-      // If authenticated, apply invite code if present and redirect to interview
+      // If authenticated, check assessment status
       if (session) {
         await applyInviteCode();
-        router.push('/assessment/interview');
+
+        // Check assessment status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('assessment_status')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          switch (profile.assessment_status) {
+            case 'not_started':
+            case 'in_progress':
+              // Go to interview
+              router.push('/assessment/interview');
+              return;
+            case 'completed':
+            case 'pending_review':
+            case 'trial':
+            case 'approved':
+              // Show retake dialog
+              setShowRetakeDialog(true);
+              setIsLoading(false);
+              return;
+            case 'waitlist':
+            case 'rejected':
+              router.push('/status/not-approved');
+              return;
+            default:
+              router.push('/assessment/interview');
+              return;
+          }
+        } else {
+          // No profile yet, go to interview
+          router.push('/assessment/interview');
+        }
       }
     } catch (error) {
       console.error('Auth check error:', error);
@@ -64,6 +110,14 @@ export default function AssessmentStartPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRetake = () => {
+    router.push('/assessment/interview?retake=true');
+  };
+
+  const handleGoToMembers = () => {
+    router.push('/members');
   };
 
   if (isLoading) {
@@ -105,6 +159,7 @@ export default function AssessmentStartPage() {
             <div className="mb-8">
               <LinkedInSignInButton
                 redirectTo="/assessment/interview"
+                source="assessment"
                 variant="primary"
                 fullWidth
               />
@@ -154,6 +209,41 @@ export default function AssessmentStartPage() {
                   Log in here
                 </Link>
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show retake dialog for users who have already completed assessment
+  if (showRetakeDialog) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-8">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                You&apos;ve Already Completed This Assessment
+              </h1>
+              <p className="text-gray-300">
+                Would you like to take it again? Your previous results will be replaced.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <button
+                onClick={handleRetake}
+                className="w-full px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-lg transition-all duration-200"
+              >
+                Yes, Take It Again
+              </button>
+              <button
+                onClick={handleGoToMembers}
+                className="w-full px-8 py-3 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-semibold rounded-lg transition-all duration-200"
+              >
+                No Thanks, Go to Members Area
+              </button>
             </div>
           </div>
         </div>

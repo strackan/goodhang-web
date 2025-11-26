@@ -5,12 +5,14 @@ import { useState } from 'react';
 
 interface LinkedInSignInButtonProps {
   redirectTo?: string;
+  source?: 'login' | 'assessment';
   variant?: 'primary' | 'secondary';
   fullWidth?: boolean;
 }
 
 export function LinkedInSignInButton({
   redirectTo = '/members',
+  source = 'login',
   variant = 'primary',
   fullWidth = false
 }: LinkedInSignInButtonProps) {
@@ -24,7 +26,7 @@ export function LinkedInSignInButton({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}&source=${source}`,
         },
       });
 

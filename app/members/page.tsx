@@ -18,17 +18,9 @@ export default async function MembersPage() {
     .eq('id', user.id)
     .single();
 
-  // Check assessment status and redirect if needed
-  if (profile) {
-    // Redirect users who haven't completed assessment
-    if (['not_started', 'in_progress'].includes(profile.assessment_status)) {
-      redirect('/assessment/start');
-    }
-    // Redirect users who were not approved
-    if (['waitlist', 'rejected'].includes(profile.assessment_status)) {
-      redirect('/status/not-approved');
-    }
-  }
+  // Note: We no longer redirect based on assessment status here.
+  // Members who login via /login should always reach this page.
+  // Assessment flow is handled separately via source=assessment parameter.
 
   return (
     <div className="min-h-screen">

@@ -5,6 +5,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/members'
+  const source = searchParams.get('source') ?? 'login'
 
   if (code) {
     const supabase = await createClient()
@@ -54,35 +55,44 @@ export async function GET(request: Request) {
         }
       }
 
-      // Get updated profile to check assessment status
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('assessment_status')
-        .eq('id', user.id)
-        .single()
-
-      // Determine redirect based on assessment status
+      // Determine redirect path based on source
       let redirectPath = next
 
-      if (profile) {
-        switch (profile.assessment_status) {
-          case 'not_started':
-            redirectPath = '/assessment/start'
-            break
-          case 'in_progress':
-            redirectPath = '/assessment/questions'
-            break
-          case 'waitlist':
-          case 'rejected':
-            redirectPath = '/status/not-approved'
-            break
-          case 'pending_review':
-          case 'trial':
-          case 'approved':
-            redirectPath = next // Allow access to members area
-            break
-          default:
-            redirectPath = '/assessment/start'
+      // If coming from login, always go to members area (no assessment status checks)
+      if (source === 'login') {
+        redirectPath = '/members'
+      } else if (source === 'assessment') {
+        // If coming from assessment, check status and route accordingly
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('assessment_status')
+          .eq('id', user.id)
+          .single()
+
+        if (profile) {
+          switch (profile.assessment_status) {
+            case 'not_started':
+              // New user taking assessment - go to interview
+              redirectPath = '/assessment/interview'
+              break
+            case 'in_progress':
+              // Resume assessment
+              redirectPath = '/assessment/interview'
+              break
+            case 'completed':
+            case 'pending_review':
+            case 'trial':
+            case 'approved':
+              // Already completed - go to assessment start which will show the retake dialog
+              redirectPath = '/assessment/start?completed=true'
+              break
+            case 'waitlist':
+            case 'rejected':
+              redirectPath = '/status/not-approved'
+              break
+            default:
+              redirectPath = '/assessment/interview'
+          }
         }
       }
 
