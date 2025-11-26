@@ -12,13 +12,13 @@
  *    - completed/approved/etc: show retake dialog
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { LinkedInSignInButton } from '@/components/auth/LinkedInSignInButton';
 
-export default function AssessmentStartPage() {
+function AssessmentStartContent() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showRetakeDialog, setShowRetakeDialog] = useState(false);
@@ -259,5 +259,23 @@ export default function AssessmentStartPage() {
         <p className="text-gray-300 text-lg">Starting your assessment...</p>
       </div>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+    </div>
+  );
+}
+
+// Main export wrapped in Suspense for useSearchParams
+export default function AssessmentStartPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AssessmentStartContent />
+    </Suspense>
   );
 }
