@@ -21,11 +21,12 @@ export async function POST(_request: NextRequest) {
     }
 
     // Check for existing incomplete session
+    // Note: Valid statuses are 'in_progress', 'completed', 'abandoned' (no 'not_started')
     const { data: existingSession, error: fetchError } = await supabase
       .from('cs_assessment_sessions')
       .select('*')
       .eq('user_id', user.id)
-      .in('status', ['not_started', 'in_progress'])
+      .eq('status', 'in_progress')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
@@ -46,13 +47,15 @@ export async function POST(_request: NextRequest) {
       session = existingSession;
     } else {
       // Create new session
+      // Note: Table schema uses interview_transcript (not answers), and status must be 'in_progress' (not 'not_started')
       const { data: newSession, error: createError } = await supabase
         .from('cs_assessment_sessions')
         .insert({
           user_id: user.id,
-          status: 'not_started',
-          answers: {},
-          started_at: new Date().toISOString(),
+          status: 'in_progress',
+          current_section_index: 0,
+          current_question_index: 0,
+          interview_transcript: [],
         })
         .select()
         .single();
@@ -66,16 +69,13 @@ export async function POST(_request: NextRequest) {
       }
 
       session = newSession;
-
-      // Update status to in_progress
-      await supabase
-        .from('cs_assessment_sessions')
-        .update({ status: 'in_progress' })
-        .eq('id', session.id);
     }
 
-    // Calculate progress
-    const answersCount = Object.keys(session.answers || {}).length;
+    // Calculate progress based on interview_transcript (array of Q&A pairs)
+    const transcript = session.interview_transcript || [];
+    const answersCount = Array.isArray(transcript)
+      ? transcript.filter((entry: { role?: string }) => entry.role === 'user').length
+      : 0;
     const totalQuestions = (coreQuestions as AssessmentConfig).sections.reduce(
       (sum, section) => sum + section.questions.length,
       0
