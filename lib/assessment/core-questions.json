@@ -17,16 +17,6 @@
           "id": "pers-1",
           "section": "personality_warmup",
           "order": 1,
-          "text": "How does the Internet work?",
-          "type": "open_ended",
-          "dimensions": ["iq", "technical"],
-          "scoring_guidance": "Look for: clarity of explanation, appropriate depth, ability to simplify complex concepts. Elite answers show layered understanding (physical, protocol, application layers) without being pedantic.",
-          "required": true
-        },
-        {
-          "id": "pers-2",
-          "section": "personality_warmup",
-          "order": 2,
           "text": "When you're under significant stress at work, what does your behavior look like? Be honest - we all have patterns.",
           "type": "open_ended",
           "dimensions": ["self_awareness", "personality", "eq"],
@@ -249,9 +239,19 @@
       "transitionMessage": "Let's see how you work with AI tools.",
       "questions": [
         {
-          "id": "ai-1",
+          "id": "ai-0",
           "section": "ai_orchestration",
           "order": 1,
+          "text": "How does the Internet work?",
+          "type": "open_ended",
+          "dimensions": ["iq", "technical"],
+          "scoring_guidance": "Look for: clarity of explanation, appropriate depth, ability to simplify complex concepts. Elite answers show layered understanding (physical, protocol, application layers) without being pedantic.",
+          "required": true
+        },
+        {
+          "id": "ai-1",
+          "section": "ai_orchestration",
+          "order": 2,
           "text": "How are you currently using AI tools in your CS work? Give me 2-3 specific examples with the actual prompts or workflows you use.",
           "type": "open_ended",
           "dimensions": ["ai_readiness", "technical", "iq"],
@@ -261,7 +261,7 @@
         {
           "id": "ai-2",
           "section": "ai_orchestration",
-          "order": 2,
+          "order": 3,
           "text": "**Scenario:** You need to analyze 50 customer support tickets to identify common themes and prioritize which issues to address first.\n\n**Your Task:** Write the EXACT prompt you would give to an AI tool to help you analyze these tickets.",
           "type": "open_ended",
           "dimensions": ["ai_readiness", "iq"],
@@ -271,7 +271,7 @@
         {
           "id": "ai-3",
           "section": "ai_orchestration",
-          "order": 3,
+          "order": 4,
           "text": "**Scenario:** You're designing a customer health scoring algorithm. You have: product usage (logins/week), support tickets, NPS score, contract value, days since last engagement, and executive sponsor engagement.\n\n**Your Task:** Write the EXACT prompt you would give to an AI to help you design this scoring system.",
           "type": "open_ended",
           "dimensions": ["ai_readiness", "iq", "gtm"],
@@ -281,7 +281,7 @@
         {
           "id": "ai-4",
           "section": "ai_orchestration",
-          "order": 4,
+          "order": 5,
           "text": "When should you NOT use AI? Give me 3 specific CS scenarios where AI would be the wrong choice.",
           "type": "open_ended",
           "dimensions": ["ai_readiness", "iq", "eq"],
