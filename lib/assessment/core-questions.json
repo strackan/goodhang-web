@@ -14,9 +14,19 @@
       "transitionMessage": "Great start. Now let's dig into your CS expertise.",
       "questions": [
         {
-          "id": "pers-1",
+          "id": "pers-0",
           "section": "personality_warmup",
           "order": 1,
+          "text": "Hey! Tell us a bit about yourself - who you are, what you're working on, and anything else you'd like us to know.",
+          "type": "open_ended",
+          "dimensions": ["personality", "culture_fit", "passions"],
+          "scoring_guidance": "Look for: authenticity, warmth, communication style, what they choose to highlight. No wrong answers - this is about getting to know them as a person.",
+          "required": true
+        },
+        {
+          "id": "pers-1",
+          "section": "personality_warmup",
+          "order": 2,
           "text": "When you're under significant stress at work, what does your behavior look like? Be honest - we all have patterns.",
           "type": "open_ended",
           "dimensions": ["self_awareness", "personality", "eq"],
@@ -25,7 +35,7 @@
           "required": true
         },
         {
-          "id": "pers-3",
+          "id": "pers-2",
           "section": "personality_warmup",
           "order": 3,
           "text": "What kind of humor do you enjoy most? Describe how you like to spend time with friends - what makes for a great hangout?",
@@ -35,7 +45,7 @@
           "required": true
         },
         {
-          "id": "pers-4",
+          "id": "pers-3",
           "section": "personality_warmup",
           "order": 4,
           "text": "What's a belief you held strongly 5 years ago that you've since changed your mind about? What changed it?",
