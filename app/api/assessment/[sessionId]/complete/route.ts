@@ -50,11 +50,23 @@ export async function POST(
     }
 
     // Validate that all required questions are answered
-    const answersCount = Object.keys(session.answers || {}).length;
-    if (answersCount < 20) {
-      // Core questions has 20 questions
+    // interview_transcript is an array of {role, content} entries
+    // User answers have role: 'user', questions have role: 'assistant'
+    const transcript = session.interview_transcript || [];
+    const answersCount = Array.isArray(transcript)
+      ? transcript.filter((entry: { role?: string }) => entry.role === 'user').length
+      : 0;
+
+    // Get actual question count from the assessment config
+    const coreQuestions = await import('@/lib/assessment/core-questions.json');
+    const totalQuestions = coreQuestions.sections.reduce(
+      (sum: number, section: { questions: unknown[] }) => sum + section.questions.length,
+      0
+    );
+
+    if (answersCount < totalQuestions) {
       return NextResponse.json(
-        { error: 'Not all required questions have been answered' },
+        { error: `Not all required questions have been answered (${answersCount}/${totalQuestions})` },
         { status: 400 }
       );
     }
@@ -65,7 +77,7 @@ export async function POST(
     const scoringResults = await AssessmentScoringService.scoreAssessment({
       session_id: sessionId,
       user_id: user.id,
-      answers: session.answers,
+      transcript: session.interview_transcript,
     });
 
     console.log(`Scoring complete for session ${sessionId}`);

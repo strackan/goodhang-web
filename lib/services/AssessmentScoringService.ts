@@ -17,10 +17,17 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+interface TranscriptEntry {
+  role: 'assistant' | 'user';
+  content: string;
+  question_id?: string;
+  timestamp?: string;
+}
+
 interface ScoringInput {
   session_id: string;
   user_id: string;
-  answers: Record<string, { question_id: string; answer: string; answered_at: string }>;
+  transcript: TranscriptEntry[];
 }
 
 interface ClaudeScoringResponse {
@@ -43,7 +50,7 @@ export class AssessmentScoringService {
    */
   static async scoreAssessment(input: ScoringInput): Promise<AssessmentResults> {
     // 1. Generate Claude AI scoring
-    const claudeScoring = await this.generateClaudeScoring(input.answers);
+    const claudeScoring = await this.generateClaudeScoring(input.transcript);
 
     // 2. Calculate category scores from dimensions
     const categoryScores = this.calculateCategoryScores(claudeScoring.dimensions);
@@ -52,7 +59,7 @@ export class AssessmentScoringService {
     const overallScore = this.calculateOverallScore(categoryScores);
 
     // 4. Extract experience years for badge evaluation
-    const experienceYears = BadgeEvaluatorService.extractExperienceYears(input.answers);
+    const experienceYears = BadgeEvaluatorService.extractExperienceYearsFromTranscript(input.transcript);
 
     // 5. Evaluate and award badges
     const badgeIds = BadgeEvaluatorService.evaluateBadges({
@@ -94,9 +101,9 @@ export class AssessmentScoringService {
    * Generates comprehensive scoring using Claude AI
    */
   private static async generateClaudeScoring(
-    answers: Record<string, { question_id: string; answer: string; answered_at: string }>
+    transcript: TranscriptEntry[]
   ): Promise<ClaudeScoringResponse> {
-    const prompt = this.buildScoringPrompt(answers);
+    const prompt = this.buildScoringPrompt(transcript);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -131,23 +138,32 @@ export class AssessmentScoringService {
   }
 
   /**
-   * Builds the scoring prompt with all answers
+   * Builds the scoring prompt from interview transcript
    */
-  private static buildScoringPrompt(answers: Record<string, { answer: string }>): string {
-    const formattedAnswers = Object.entries(answers)
-      .map(([questionId, data]) => {
-        return `Question ID: ${questionId}\nAnswer: ${data.answer}\n`;
-      })
-      .join('\n---\n\n');
+  private static buildScoringPrompt(transcript: TranscriptEntry[]): string {
+    // Format transcript as Q&A pairs
+    const formattedQA: string[] = [];
+    for (let i = 0; i < transcript.length; i++) {
+      const entry = transcript[i];
+      const nextEntry = transcript[i + 1];
+      if (entry && entry.role === 'assistant' && nextEntry?.role === 'user') {
+        formattedQA.push(
+          `Question${entry.question_id ? ` (${entry.question_id})` : ''}: ${entry.content}\nAnswer: ${nextEntry.content}\n`
+        );
+        i++; // Skip the answer entry since we processed it
+      }
+    }
+
+    const formattedAnswers = formattedQA.join('\n---\n\n');
 
     return `
-Please score this CS assessment based on the candidate's answers. The assessment has 20 questions across 4 sections:
-1. Personality & Work Style (10 questions) - MBTI and Enneagram typing
-2. AI & Systems Thinking (5 questions) - AI orchestration capability
-3. Professional Background (3 questions) - Experience and goals
-4. Culture & Self-Awareness (2 questions) - Cultural fit
+Please score this CS assessment based on the candidate's answers. The assessment covers:
+1. Personality & Work Style - MBTI and Enneagram typing
+2. AI & Systems Thinking - AI orchestration capability
+3. Professional Background - Experience and goals
+4. Culture & Self-Awareness - Cultural fit
 
-## Candidate's Answers:
+## Interview Transcript:
 
 ${formattedAnswers}
 

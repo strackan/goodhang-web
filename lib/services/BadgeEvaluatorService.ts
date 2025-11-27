@@ -130,14 +130,42 @@ export class BadgeEvaluatorService {
   }
 
   /**
-   * Extract experience years from answers
+   * Extract experience years from answers (legacy format)
    * Looks for prof-1 question which asks about years of experience
    */
   static extractExperienceYears(answers: Record<string, { answer: string }>): number | undefined {
     const profAnswer = answers['prof-1'];
     if (!profAnswer?.answer) return undefined;
 
-    const answerText = profAnswer.answer.toLowerCase();
+    return this.parseYearsFromText(profAnswer.answer);
+  }
+
+  /**
+   * Extract experience years from interview transcript
+   * Looks for prof-1 question which asks about years of experience
+   */
+  static extractExperienceYearsFromTranscript(
+    transcript: Array<{ role: string; content: string; question_id?: string }>
+  ): number | undefined {
+    // Find the prof-1 question and its answer
+    for (let i = 0; i < transcript.length; i++) {
+      const entry = transcript[i];
+      if (entry && entry.role === 'assistant' && entry.question_id === 'prof-1') {
+        // The next entry should be the user's answer
+        const answerEntry = transcript[i + 1];
+        if (answerEntry?.role === 'user') {
+          return this.parseYearsFromText(answerEntry.content);
+        }
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Parse years from text content
+   */
+  private static parseYearsFromText(text: string): number | undefined {
+    const answerText = text.toLowerCase();
 
     // Look for patterns like "5 years", "10+ years", "3-5 years", etc.
     const patterns = [
