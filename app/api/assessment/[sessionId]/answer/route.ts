@@ -1,14 +1,25 @@
 // POST /api/assessment/[sessionId]/answer
-// Saves answer with auto-save functionality
+// Saves answer to interview_transcript with auto-save functionality
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 interface AnswerRequestBody {
   question_id: string;
+  question_text?: string;
   answer: string;
-  current_section?: string;
-  current_question?: number;
+  // Support both naming conventions
+  current_section_index?: number;
+  current_question_index?: number;
+  section_index?: number;
+  question_index?: number;
+}
+
+interface TranscriptEntry {
+  role: 'assistant' | 'user';
+  content: string;
+  question_id?: string;
+  timestamp: string;
 }
 
 export async function POST(
@@ -30,7 +41,10 @@ export async function POST(
 
     const { sessionId } = await params;
     const body: AnswerRequestBody = await request.json();
-    const { question_id, answer, current_section, current_question } = body;
+    const { question_id, question_text, answer } = body;
+    // Support both naming conventions from frontend
+    const sectionIndex = body.current_section_index ?? body.section_index;
+    const questionIndex = body.current_question_index ?? body.question_index;
 
     if (!question_id || !answer) {
       return NextResponse.json(
@@ -62,33 +76,60 @@ export async function POST(
       );
     }
 
-    // Update answers
-    const updatedAnswers = {
-      ...(session.answers || {}),
-      [question_id]: {
+    // Get existing transcript
+    const transcript: TranscriptEntry[] = session.interview_transcript || [];
+    const now = new Date().toISOString();
+
+    // Check if this question was already answered (for updates/edits)
+    const existingQuestionIndex = transcript.findIndex(
+      (entry) => entry.role === 'assistant' && entry.question_id === question_id
+    );
+
+    if (existingQuestionIndex !== -1) {
+      // Update existing answer (the user entry follows the assistant entry)
+      const answerIndex = existingQuestionIndex + 1;
+      const existingAnswer = transcript[answerIndex];
+      if (answerIndex < transcript.length && existingAnswer && existingAnswer.role === 'user') {
+        transcript[answerIndex] = {
+          role: 'user',
+          content: answer,
+          timestamp: now,
+        };
+      }
+    } else {
+      // Add new Q&A pair to transcript
+      transcript.push({
+        role: 'assistant',
+        content: question_text || question_id,
         question_id,
-        answer,
-        answered_at: new Date().toISOString(),
-      },
-    };
+        timestamp: now,
+      });
+      transcript.push({
+        role: 'user',
+        content: answer,
+        timestamp: now,
+      });
+    }
 
     // Build update object
     const updateData: {
-      answers: Record<string, { question_id: string; answer: string; answered_at: string }>;
+      interview_transcript: TranscriptEntry[];
       status: string;
-      current_section?: string;
-      current_question?: number;
+      last_activity_at: string;
+      current_section_index?: number;
+      current_question_index?: number;
     } = {
-      answers: updatedAnswers,
+      interview_transcript: transcript,
       status: 'in_progress',
+      last_activity_at: now,
     };
 
-    if (current_section) {
-      updateData.current_section = current_section;
+    if (sectionIndex !== undefined) {
+      updateData.current_section_index = sectionIndex;
     }
 
-    if (current_question !== undefined) {
-      updateData.current_question = current_question;
+    if (questionIndex !== undefined) {
+      updateData.current_question_index = questionIndex;
     }
 
     // Save to database
@@ -108,7 +149,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       session_id: sessionId,
-      saved_at: new Date().toISOString(),
+      saved_at: now,
     });
   } catch (error) {
     console.error('Error in /api/assessment/[sessionId]/answer:', error);
