@@ -26,6 +26,15 @@ function AssessmentStartContent() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
+  // Store invite code in sessionStorage before OAuth flow
+  // This ensures the code persists through the LinkedIn OAuth redirect
+  useEffect(() => {
+    const code = searchParams.get('code');
+    if (code) {
+      sessionStorage.setItem('goodhang_invite_code', code);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     checkAuth();
   }, []);
