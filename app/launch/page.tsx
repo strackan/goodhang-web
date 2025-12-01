@@ -53,7 +53,7 @@ export default function LaunchPartyPage() {
         .eq('event_id', LAUNCH_EVENT_ID);
 
       if (!error && data) {
-        const total = data.reduce((acc, rsvp) => acc + 1 + (rsvp.plus_ones || 0), 0);
+        const total = data.reduce((acc: number, rsvp: { plus_ones: number | null }) => acc + 1 + (rsvp.plus_ones || 0), 0);
         setRsvpCount(total);
       }
     } catch (err) {

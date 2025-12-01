@@ -5,7 +5,7 @@
  * Allows admins and ambassadors to view and manage pending invites
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
@@ -20,7 +20,8 @@ interface PendingInvite {
 
 export default function PendingInvitesPage() {
   const router = useRouter();
-  const supabase = createClient();
+  // Create client lazily to avoid SSR issues during build
+  const supabase = useMemo(() => createClient(), []);
 
   const [, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
   const [invites, setInvites] = useState<PendingInvite[]>([]);
@@ -28,6 +29,21 @@ export default function PendingInvitesPage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [showUsed, setShowUsed] = useState(false);
+
+  const loadInvites = useCallback(async () => {
+    // Load all pending invites
+    const { data: invitesData, error: invitesError } = await supabase
+      .from('pending_invites')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (invitesError) {
+      console.error('Error loading invites:', invitesError);
+      setError('Failed to load invites');
+    } else {
+      setInvites(invitesData || []);
+    }
+  }, [supabase]);
 
   useEffect(() => {
     async function loadData() {
@@ -58,22 +74,7 @@ export default function PendingInvitesPage() {
     }
 
     loadData();
-  }, [supabase, router]);
-
-  const loadInvites = async () => {
-    // Load all pending invites
-    const { data: invitesData, error: invitesError } = await supabase
-      .from('pending_invites')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (invitesError) {
-      console.error('Error loading invites:', invitesError);
-      setError('Failed to load invites');
-    } else {
-      setInvites(invitesData || []);
-    }
-  };
+  }, [supabase, router, loadInvites]);
 
   const copyToClipboard = (text: string, inviteCode: string) => {
     navigator.clipboard.writeText(text);

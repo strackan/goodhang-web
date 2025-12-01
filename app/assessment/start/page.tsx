@@ -12,7 +12,7 @@
  *    - completed/approved/etc: show retake dialog
  */
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -24,7 +24,8 @@ function AssessmentStartContent() {
   const [showRetakeDialog, setShowRetakeDialog] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
+  // Create client lazily to avoid SSR issues during build
+  const supabase = useMemo(() => createClient(), []);
 
   // Store invite code in sessionStorage before OAuth flow
   // This ensures the code persists through the LinkedIn OAuth redirect

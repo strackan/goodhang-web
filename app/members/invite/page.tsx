@@ -7,7 +7,7 @@
  * - Ambassadors can only invite to their region
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
@@ -19,7 +19,8 @@ interface Region {
 
 export default function InvitePage() {
   const router = useRouter();
-  const supabase = createClient();
+  // Create client lazily to avoid SSR issues during build
+  const supabase = useMemo(() => createClient(), []);
 
   const [userRole, setUserRole] = useState<'admin' | 'ambassador' | 'member' | null>(null);
   const [, setUserRegionId] = useState<string | null>(null);
