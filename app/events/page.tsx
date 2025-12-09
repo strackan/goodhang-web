@@ -14,6 +14,7 @@ export default async function EventsPage() {
     { href: '/', label: 'Home' },
     { href: '/launch', label: 'Launch Party' },
     { href: '/members/directory', label: 'Members' },
+    ...(user ? [{ href: '/fun', label: 'Fun Stuff' }] : []),
     user
       ? { href: '/members', label: 'Dashboard' }
       : { href: '/login', label: 'Login' }

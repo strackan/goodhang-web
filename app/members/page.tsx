@@ -37,6 +37,9 @@ export default async function MembersPage() {
             <Link href="/events" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
               Events
             </Link>
+            <Link href="/fun" className="text-foreground hover:text-neon-cyan transition-colors font-mono">
+              Fun Stuff
+            </Link>
             {profile?.user_role === 'admin' && (
               <Link href="/admin" className="text-neon-purple hover:text-neon-magenta transition-colors font-mono">
                 Admin
@@ -117,14 +120,14 @@ export default async function MembersPage() {
                 </Link>
 
                 <Link
-                  href="/assessment/start"
+                  href="/fun"
                   className="border-2 border-neon-purple/30 hover:border-neon-purple bg-background-lighter p-6 transition-all duration-300 hover:scale-105"
                 >
                   <h3 className="text-xl font-bold font-mono neon-purple mb-2">
-                    CS Assessment
+                    Fun Stuff
                   </h3>
                   <p className="text-foreground-dim font-mono text-sm">
-                    Join our talent bench and get matched with CS opportunities
+                    Games, assessments, favor tokens, and more
                   </p>
                 </Link>
 
