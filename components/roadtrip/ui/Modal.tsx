@@ -61,7 +61,7 @@ export default function Modal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-[var(--rt-cork-dark)] hover:text-[var(--rt-rust)] transition-colors text-xl font-bold"
+          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-[var(--rt-cork-dark)] hover:text-[var(--rt-rust)] hover:bg-[var(--rt-cork)]/20 transition-colors text-3xl font-bold rounded-full"
           aria-label="Close"
         >
           ×

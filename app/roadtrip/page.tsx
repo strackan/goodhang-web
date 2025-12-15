@@ -113,7 +113,7 @@ export default function RoadTripPage() {
         </div>
 
         {/* Instructions - pinned note in corner */}
-        <div className="hidden lg:block absolute bottom-8 right-8 z-20">
+        <div className="hidden lg:block absolute bottom-8 right-8 z-[1000]">
           <div className="rt-paper-note p-4 max-w-xs transform rotate-2">
             <h3 className="rt-typewriter font-bold text-[var(--rt-forest)] mb-2">
               How to Connect:
