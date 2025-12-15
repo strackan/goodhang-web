@@ -22,8 +22,11 @@ export async function GET(request: Request) {
         .eq('id', user.id)
         .single()
 
+      // Track if this is a new user (no existing profile)
+      const isNewUser = !existingProfile
+
       // If new user, create profile with initial assessment status
-      if (!existingProfile) {
+      if (isNewUser) {
         const linkedinData = {
           id: user.id,
           email: user.email || '',
