@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { GlitchIntroV2 } from './GlitchIntroV2';
 import { HomePage } from './HomePage';
+import { SaloonModal } from './SaloonModal';
 
 export function GlitchWrapper() {
   const [showIntro, setShowIntro] = useState(false); // Start with false
   const [isMounted, setIsMounted] = useState(false);
+  const [showSaloon, setShowSaloon] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -20,6 +22,8 @@ export function GlitchWrapper() {
     if (isMobile) {
       console.log('[GlitchWrapper] Mobile device detected - skipping intro for performance');
       setShowIntro(false);
+      // Show saloon modal for mobile users
+      setShowSaloon(true);
       return;
     }
 
@@ -36,6 +40,7 @@ export function GlitchWrapper() {
       localStorage.removeItem('goodhang_glitch_emergency_skip');
       localStorage.setItem('goodhang_seen_glitch', 'true');
       setShowIntro(false);
+      setShowSaloon(true);
       return;
     }
 
@@ -46,12 +51,16 @@ export function GlitchWrapper() {
     } else {
       console.log('[GlitchWrapper] Returning visit - skipping intro');
       setShowIntro(false);
+      // Show saloon modal for returning visitors
+      setShowSaloon(true);
     }
   }, []);
 
   const handleIntroComplete = () => {
     console.log('[GlitchWrapper] Intro complete - switching to homepage');
     setShowIntro(false);
+    // Show saloon modal after intro completes
+    setShowSaloon(true);
   };
 
   const handleRewatchIntro = () => {
@@ -76,6 +85,7 @@ export function GlitchWrapper() {
     <>
       {showIntro && <GlitchIntroV2 onComplete={handleIntroComplete} />}
       {!showIntro && <HomePage onRewatchIntro={handleRewatchIntro} />}
+      <SaloonModal show={showSaloon && !showIntro} />
     </>
   );
 }
