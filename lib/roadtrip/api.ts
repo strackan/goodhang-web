@@ -49,7 +49,7 @@ export async function getCustomSpots(): Promise<CustomSpotData[]> {
   // Group by city and count
   const spotCounts = new Map<string, CustomSpotData>();
 
-  data?.forEach((item) => {
+  data?.forEach((item: { custom_city: string | null; custom_lat: number | null; custom_lng: number | null }) => {
     if (item.custom_city && item.custom_lat && item.custom_lng) {
       const key = `${item.custom_lat},${item.custom_lng}`;
       const existing = spotCounts.get(key);
@@ -83,7 +83,7 @@ export async function getStopInterestCounts(): Promise<Map<string, number>> {
   }
 
   const counts = new Map<string, number>();
-  data?.forEach((item) => {
+  data?.forEach((item: { stop_id: string | null }) => {
     if (item.stop_id) {
       counts.set(item.stop_id, (counts.get(item.stop_id) || 0) + 1);
     }

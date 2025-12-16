@@ -13,14 +13,14 @@ export function SaloonModal({ show }: SaloonModalProps) {
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
-    if (show && !hasAnimated) {
-      // Small delay before showing to ensure page is loaded
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-        setHasAnimated(true);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
+    if (!show || hasAnimated) return;
+
+    // Small delay before showing to ensure page is loaded
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+      setHasAnimated(true);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [show, hasAnimated]);
 
   if (!show || !isVisible) return null;
