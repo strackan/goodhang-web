@@ -24,21 +24,13 @@ export default function Modal({
       if (e.key === 'Escape') onClose();
     };
 
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      document.addEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
@@ -51,17 +43,30 @@ export default function Modal({
     'index-card': 'rt-index-card',
   };
 
+  const handleClose = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         ref={modalRef}
-        className={`${variantClasses[variant]} relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg p-6 pt-8`}
+        className={`${variantClasses[variant]} relative w-full max-w-lg my-auto rounded-lg p-6 pt-10`}
         style={{ marginTop: variant === 'paper' ? '8px' : '0' }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
-          onClick={onClose}
-          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-[var(--rt-cork-dark)] hover:text-[var(--rt-rust)] hover:bg-[var(--rt-cork)]/20 transition-colors text-3xl font-bold rounded-full"
+          type="button"
+          onClick={handleClose}
+          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-[var(--rt-cork-dark)] hover:text-[var(--rt-rust)] hover:bg-[var(--rt-cork)]/20 transition-colors text-3xl font-bold rounded-full z-10"
           aria-label="Close"
         >
           ×

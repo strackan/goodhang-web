@@ -26,58 +26,68 @@ export function SaloonModal({ show }: SaloonModalProps) {
   if (!show || !isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-8 pointer-events-none">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      {/* Modal backdrop - blocks clicks */}
+      <div className="absolute inset-0 bg-black/70" />
+
       {/* The swinging sign */}
       <Link
         href="/roadtrip"
-        className="saloon-sign pointer-events-auto cursor-pointer group"
+        className="saloon-sign relative cursor-pointer group w-[90%] md:w-[50%] max-w-2xl"
       >
         {/* Chain/rope from top */}
         <div className="flex justify-center">
-          <div className="w-1 h-8 bg-gradient-to-b from-amber-700 to-amber-800 rounded-full shadow-md" />
+          <div className="w-2 h-16 bg-gradient-to-b from-amber-700 to-amber-800 rounded-full shadow-md" />
         </div>
 
         {/* The sign board */}
         <div className="relative">
           {/* Wood grain background */}
           <div
-            className="saloon-board relative bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 px-8 py-6 rounded-lg shadow-2xl border-4 border-amber-950 transform transition-transform duration-300 group-hover:scale-105"
+            className="saloon-board relative px-12 py-12 md:py-16 rounded-lg shadow-2xl border-8 border-amber-950 transform transition-transform duration-300 group-hover:scale-105 overflow-hidden"
           >
-            {/* Wood grain texture overlay */}
-            <div className="saloon-wood-grain absolute inset-0 opacity-20 rounded-lg" />
+            {/* Wood texture background image */}
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: 'url("https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80")',
+              }}
+            />
+            {/* Dark overlay for readability */}
+            <div className="absolute inset-0 bg-amber-900/60" />
 
             {/* Decorative corners */}
-            <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-amber-500/50 rounded-tl" />
-            <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-amber-500/50 rounded-tr" />
-            <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-amber-500/50 rounded-bl" />
-            <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-amber-500/50 rounded-br" />
+            <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-amber-500/50 rounded-tl" />
+            <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-amber-500/50 rounded-tr" />
+            <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-amber-500/50 rounded-bl" />
+            <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-amber-500/50 rounded-br" />
 
             {/* Text content */}
             <div className="relative text-center">
-              <p className="text-amber-200 text-xs uppercase tracking-widest mb-1 font-mono">
+              <p className="text-amber-200 text-sm md:text-base uppercase tracking-widest mb-2 font-mono">
                 Now Departing
               </p>
-              <h2 className="saloon-title text-2xl md:text-3xl font-bold text-amber-100 mb-2">
+              <h2 className="saloon-title text-4xl md:text-5xl lg:text-6xl font-bold text-amber-100 mb-3">
                 The Renubu
               </h2>
-              <h3 className="saloon-title text-3xl md:text-4xl font-bold text-amber-50">
+              <h3 className="saloon-title text-5xl md:text-6xl lg:text-7xl font-bold text-amber-50">
                 Road Show
               </h3>
-              <div className="mt-3 pt-3 border-t border-amber-600/50">
-                <p className="text-amber-300 text-sm font-mono">
+              <div className="mt-6 pt-6 border-t-2 border-amber-600/50">
+                <p className="text-amber-300 text-lg md:text-xl font-mono">
                   Dec 29 - Jan 30
                 </p>
-                <p className="text-amber-200/80 text-xs mt-2 group-hover:text-amber-100 transition-colors">
-                  Click to see the route
+                <p className="text-amber-200 text-sm md:text-base mt-4 group-hover:text-amber-100 transition-colors">
+                  Click to see the route →
                 </p>
               </div>
             </div>
           </div>
 
           {/* Bottom decorative hooks */}
-          <div className="flex justify-between px-4 -mt-1">
-            <div className="w-2 h-3 bg-amber-950 rounded-b" />
-            <div className="w-2 h-3 bg-amber-950 rounded-b" />
+          <div className="flex justify-between px-8 -mt-1">
+            <div className="w-4 h-6 bg-amber-950 rounded-b" />
+            <div className="w-4 h-6 bg-amber-950 rounded-b" />
           </div>
         </div>
       </Link>

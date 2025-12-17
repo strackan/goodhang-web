@@ -29,7 +29,7 @@ export default function RoadTripPage() {
     lat: number;
     lng: number;
   } | null>(null);
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(true);
   const [isNoteOpen, setIsNoteOpen] = useState(false);
 
   // Handlers

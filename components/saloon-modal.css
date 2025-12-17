@@ -1,20 +1,6 @@
 /* Saloon sign swinging animation */
 .saloon-sign {
   transform-origin: top center;
-  animation: saloon-swing 4s ease-in-out infinite;
-}
-
-@keyframes saloon-swing {
-  0%, 100% {
-    transform: rotate(-3deg);
-  }
-  50% {
-    transform: rotate(3deg);
-  }
-}
-
-/* Initial entrance animation */
-.saloon-sign {
   animation: saloon-entrance 1s ease-out forwards, saloon-swing 4s ease-in-out 1s infinite;
 }
 
@@ -35,29 +21,20 @@
   }
 }
 
-/* Wood grain texture */
-.saloon-wood-grain {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(139, 69, 19, 0.1) 2px,
-      rgba(139, 69, 19, 0.1) 4px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 10px,
-      rgba(139, 69, 19, 0.05) 10px,
-      rgba(139, 69, 19, 0.05) 20px
-    );
+@keyframes saloon-swing {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
 }
 
-/* Western-style title font */
+/* Western-style title text */
 .saloon-title {
   text-shadow:
-    2px 2px 0 rgba(0, 0, 0, 0.3),
+    3px 3px 0 rgba(0, 0, 0, 0.5),
     -1px -1px 0 rgba(255, 255, 255, 0.1);
+  font-family: Georgia, 'Times New Roman', serif;
   letter-spacing: 0.05em;
 }
