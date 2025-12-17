@@ -50,11 +50,11 @@ export function SaloonModal({ show }: SaloonModalProps) {
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: 'url("https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80")',
+                backgroundImage: 'url("https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=800&q=80")',
               }}
             />
             {/* Dark overlay for readability */}
-            <div className="absolute inset-0 bg-amber-900/60" />
+            <div className="absolute inset-0 bg-amber-900/50" />
 
             {/* Decorative corners */}
             <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-amber-500/50 rounded-tl" />
