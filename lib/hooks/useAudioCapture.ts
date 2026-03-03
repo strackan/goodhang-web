@@ -136,7 +136,7 @@ async function convertToWav(webmBlob: Blob): Promise<Blob> {
     view.setUint32(40, dataSize, true);
 
     for (let i = 0; i < numSamples; i++) {
-      const clamped = Math.max(-1, Math.min(1, samples[i]));
+      const clamped = Math.max(-1, Math.min(1, samples[i] ?? 0));
       view.setInt16(44 + i * 2, clamped * 0x7fff, true);
     }
 
