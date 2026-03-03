@@ -10,9 +10,9 @@ export interface UseRecordingTimerOptions {
   maxDurationMs?: number;     // default 300_000 (5 min)
   warningAtMs?: number;       // default 60_000 (1 min remaining)
   flashAtMs?: number;         // default 10_000 (10s remaining)
-  onTimeout?: () => void;
-  onWarning?: () => void;
-  onFlash?: () => void;
+  onTimeout?: (() => void) | undefined;
+  onWarning?: (() => void) | undefined;
+  onFlash?: (() => void) | undefined;
 }
 
 export interface UseRecordingTimerReturn {
